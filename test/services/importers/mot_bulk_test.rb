@@ -145,3 +145,20 @@ class Importers::MotBulkTest < ActiveSupport::TestCase
     assert InspectionCell.any?
   end
 end
+
+class ImportMotFilesJobTest < ActiveJob::TestCase
+  test "rebuilds the rates after every import, even when every defect wording was seen before" do
+    dir = Pathname(Dir.mktmpdir)
+    CSV.open(dir.join("test_result.csv"), "w", col_sep: "|") do |csv|
+      csv << Importers::MotBulk::COLUMNS[:results]
+      csv << [ 1, 10, "2024-03-01", 4, "NT", "P", 70_500, "SW", "VOLKSWAGEN", "GOLF GTI", "RED", "PE", 1395, "2015-02-01" ]
+    end
+    CSV.open(dir.join("test_item.csv"), "w", col_sep: "|") { |csv| csv << Importers::MotBulk::COLUMNS[:items] }
+
+    assert_enqueued_with(job: RefreshDefectRatesJob) do
+      ImportMotFilesJob.perform_now(results: dir.join("test_result.csv").to_s, items: dir.join("test_item.csv").to_s)
+    end
+  ensure
+    FileUtils.rm_rf(dir)
+  end
+end
