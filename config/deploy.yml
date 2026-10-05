@@ -11,9 +11,14 @@ servers:
   web:
     - <%= ENV.fetch("CURB_SERVER", "203.0.113.10") %>
 
-# kamal-proxy gets a free Let's Encrypt certificate for the domain and sends traffic to the app.
+# Visitors reach Cloudflare, which forwards to kamal-proxy here over HTTPS using Cloudflare's origin certificate
+# (good for 15 years, so nothing to renew; see docs/deploy.md). kamal-proxy then hands requests to the app.
 proxy:
-  ssl: true
+  ssl:
+    certificate_pem: CLOUDFLARE_ORIGIN_CERT
+    private_key_pem: CLOUDFLARE_ORIGIN_KEY
+  # Pass Cloudflare's X-Forwarded-For through, so the app sees each visitor's address (config/environments/production.rb).
+  forward_headers: true
   host: <%= ENV.fetch("CURB_HOST", "curb.example.com") %>
   # Building a report can take a few seconds; give it room.
   response_timeout: 60
