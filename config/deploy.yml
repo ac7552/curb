@@ -1,0 +1,68 @@
+# Deploys Curb to one server with Kamal: the app and its Postgres database run side by side as Docker containers.
+# Setup and first deploy: docs/deploy.md. Day to day: `bin/kamal deploy`.
+#
+# The server's address and the site's domain come from your shell, so they stay out of the repo:
+#   export CURB_SERVER=203.0.113.10   # the server's IP address
+#   export CURB_HOST=curb.example.com # a domain whose DNS A record points at that IP
+service: curb
+image: curb
+
+servers:
+  web:
+    - <%= ENV.fetch("CURB_SERVER", "203.0.113.10") %>
+
+# kamal-proxy gets a free Let's Encrypt certificate for the domain and sends traffic to the app.
+proxy:
+  ssl: true
+  host: <%= ENV.fetch("CURB_HOST", "curb.example.com") %>
+  # Building a report can take a few seconds; give it room.
+  response_timeout: 60
+
+# A registry on the server itself, reached over SSH: no Docker Hub account, nothing public.
+registry:
+  server: localhost:5555
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+    - CURB_DATABASE_PASSWORD
+  clear:
+    DB_HOST: curb-db
+    # Background jobs run inside the web process, so one container does everything.
+    SOLID_QUEUE_IN_PUMA: true
+    # The real tables are copied over from your machine (docs/deploy.md); don't generate demo inspections.
+    SKIP_DEMO: 1
+    WEB_CONCURRENCY: 2
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
+
+# Uploaded files (Active Storage) live on the server's disk and survive deploys.
+volumes:
+  - "curb_storage:/rails/storage"
+
+# Fingerprinted assets stay available while old and new versions swap.
+asset_path: /rails/public/assets
+
+builder:
+  # Most cheap servers (Hetzner CX/CPX, DigitalOcean) are x86. Building on an Apple Silicon Mac emulates it, which
+  # is slower but works; for an ARM server (Hetzner CAX) change this to arm64.
+  arch: amd64
+
+accessories:
+  db:
+    image: postgres:17
+    host: <%= ENV.fetch("CURB_SERVER", "203.0.113.10") %>
+    # Only reachable from the server itself, never from the internet.
+    port: "127.0.0.1:5432:5432"
+    env:
+      clear:
+        POSTGRES_USER: curb
+        POSTGRES_DB: curb_app_production
+      secret:
+        - POSTGRES_PASSWORD
+    directories:
+      - data:/var/lib/postgresql/data

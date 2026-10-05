@@ -1,0 +1,102 @@
+# Generic service schedule used for every car unless a make/model row of the same name replaces it.
+# Wear items (pads, tires, battery, wipers) are priced here, not as defects.
+- { name: Oil and filter change, interval_miles: 7500, interval_months: 12, labor_hours: 0.5, parts_cost_usd: 45 }
+- { name: Engine air filter, interval_miles: 30000, interval_months: 36, labor_hours: 0.2, parts_cost_usd: 25 }
+- { name: Cabin air filter, interval_miles: 15000, interval_months: 24, labor_hours: 0.2, parts_cost_usd: 25 }
+- { name: Brake fluid change, interval_months: 24, labor_hours: 1.0, parts_cost_usd: 20 }
+- { name: Coolant change, interval_miles: 100000, interval_months: 120, labor_hours: 1.0, parts_cost_usd: 40 }
+- { name: Spark plugs, interval_miles: 100000, labor_hours: 1.0, parts_cost_usd: 80 }
+- { name: Transmission fluid, interval_miles: 60000, labor_hours: 1.0, parts_cost_usd: 90 }
+- { name: Front brake pads and discs, interval_miles: 40000, labor_hours: 2.0, parts_cost_usd: 220, wear_item: true }
+- { name: Rear brake pads, interval_miles: 60000, labor_hours: 1.5, parts_cost_usd: 120, wear_item: true }
+- { name: Tires (set of four), interval_miles: 45000, interval_months: 72, labor_hours: 1.0, parts_cost_usd: 650, wear_item: true }
+- { name: Battery, interval_months: 60, labor_hours: 0.5, parts_cost_usd: 180, wear_item: true }
+- { name: Wiper blades, interval_months: 12, labor_hours: 0.1, parts_cost_usd: 35, wear_item: true }
+# Diesel and some petrol engines use a timing belt rather than a chain.
+- { make_key: VOLKSWAGEN, name: Timing belt, interval_miles: 100000, interval_months: 60, labor_hours: 4.0, parts_cost_usd: 350 }
+- { make_key: SKODA, name: Timing belt, interval_miles: 100000, interval_months: 60, labor_hours: 4.0, parts_cost_usd: 350 }
+- { make_key: FORD, model_key: FOCUS, name: Timing belt, interval_miles: 125000, interval_months: 120, labor_hours: 4.0, parts_cost_usd: 300 }
+# Mercedes-Benz uses one schedule for every model: Service A (oil and filter, checks) every 10,000 miles or
+# 1 year, alternating with Service B, which adds the cabin filter and brake fluid. Brake fluid every 2 years
+# is already the generic row. https://www.mbusa.com/en/owners/service-maintenance
+- { make_key: MERCEDES-BENZ, name: Oil and filter change, interval_miles: 10000, interval_months: 12, labor_hours: 0.5, parts_cost_usd: 90 }
+- { make_key: MERCEDES-BENZ, name: Cabin air filter, interval_miles: 20000, interval_months: 24, labor_hours: 0.3, parts_cost_usd: 60 }
+# Volvo: "Model Year 2013 and later vehicles, the service intervals are every 10,000 miles" (Volvo Service
+# Manager Bulletin FSM330, filed with NHTSA as 10155353). The bulletin gives no time limit.
+- { make_key: VOLVO, name: Oil and filter change, interval_miles: 10000, labor_hours: 0.5, parts_cost_usd: 80 }
+# Polestar: "The service schedule for Polestar is every 2 years or 20,000 miles", and each service replaces
+# the passenger compartment air cleaner (Polestar Service Manager Bulletin 00-011P, filed with NHTSA as 10212874).
+- { make_key: POLESTAR, name: Cabin air filter, interval_miles: 20000, interval_months: 24, labor_hours: 0.3, parts_cost_usd: 60 }
+# Lucid: cabin air filter every 1 year or 12,000 miles; brake fluid every 2 years or 24,000 miles (Lucid Air
+# owner's manual, "Maintenance Requirements").
+- { make_key: LUCID, name: Cabin air filter, interval_miles: 12000, interval_months: 12, labor_hours: 0.3, parts_cost_usd: 70 }
+- { make_key: LUCID, name: Brake fluid change, interval_miles: 24000, interval_months: 24, labor_hours: 1.0, parts_cost_usd: 30 }
+# Porsche: "oil and filter replacement every 10,000 miles, or at least once per year" for every model; the
+# Macan's spark plugs and cabin air filter every 40,000 miles or 4 years. From Porsche Westwood's summary of
+# Porsche's schedule (westwood.porsche.com, "Porsche Maintenance Schedules"); Porsche's own booklet isn't public.
+- { make_key: PORSCHE, name: Oil and filter change, interval_miles: 10000, interval_months: 12, labor_hours: 0.8, parts_cost_usd: 120 }
+- { make_key: PORSCHE, model_key: MACAN, name: Spark plugs, interval_miles: 40000, interval_months: 48, labor_hours: 1.5, parts_cost_usd: 160 }
+- { make_key: PORSCHE, model_key: MACAN, name: Cabin air filter, interval_miles: 40000, interval_months: 48, labor_hours: 0.4, parts_cost_usd: 80 }
+# BMW: the car's Condition Based Service sets the oil service; other work is tied to it. BMW's 2023 maintenance
+# book (bmwusa.com, "BMW-MY-2023-All-Models-Maintenance"): "Every 2nd engine oil service (approx. 20,000 mi)"
+# replace the ventilation microfilter; every 3rd or 4th (by model group, approx. 30,000-40,000 mi) the air
+# filter element, taken here as the sooner; "Every 6th engine oil service (approx. 60,000 mi)" spark plugs, and
+# every 3rd (approx. 30,000 mi) on M models.
+- { make_key: BMW, name: Oil and filter change, interval_miles: 10000, labor_hours: 0.6, parts_cost_usd: 110 }
+- { make_key: BMW, name: Cabin air filter, interval_miles: 20000, labor_hours: 0.4, parts_cost_usd: 70 }
+- { make_key: BMW, name: Engine air filter, interval_miles: 30000, labor_hours: 0.4, parts_cost_usd: 60 }
+- { make_key: BMW, name: Spark plugs, interval_miles: 60000, labor_hours: 1.5, parts_cost_usd: 140 }
+- { make_key: BMW, model_key: M2, name: Spark plugs, interval_miles: 30000, labor_hours: 1.5, parts_cost_usd: 160 }
+- { make_key: BMW, model_key: M3, name: Spark plugs, interval_miles: 30000, labor_hours: 1.5, parts_cost_usd: 160 }
+- { make_key: BMW, model_key: M4, name: Spark plugs, interval_miles: 30000, labor_hours: 1.5, parts_cost_usd: 160 }
+- { make_key: BMW, model_key: M5, name: Spark plugs, interval_miles: 30000, labor_hours: 2.0, parts_cost_usd: 220 }
+- { make_key: BMW, model_key: M8, name: Spark plugs, interval_miles: 30000, labor_hours: 2.0, parts_cost_usd: 220 }
+# MINI (same system): "At every 2nd Engine Oil Service" the ventilation microfilter; "At every 4th Engine Oil
+# Service (approximately 40,000 miles)" the air filter; "At every 6th Engine Oil Service (approximately 60,000
+# miles)" spark plugs (MINI USA 2019 Maintenance booklet, miniusa.com). So an oil service is about every 10,000 miles.
+- { make_key: MINI, name: Oil and filter change, interval_miles: 10000, labor_hours: 0.5, parts_cost_usd: 90 }
+- { make_key: MINI, name: Cabin air filter, interval_miles: 20000, labor_hours: 0.3, parts_cost_usd: 50 }
+- { make_key: MINI, name: Engine air filter, interval_miles: 40000, labor_hours: 0.3, parts_cost_usd: 45 }
+- { make_key: MINI, name: Spark plugs, interval_miles: 60000, labor_hours: 1.2, parts_cost_usd: 110 }
+# Ford and Lincoln: Ford's owner's manual, "Normal Scheduled Maintenance" (fordservicecontent.com): oil, filter and
+# tire rotation when the Intelligent Oil-Life Monitor says, 7,500-10,000 miles in normal use (the sooner is taken)
+# and "Do not exceed one year or 10000 miles"; cabin air filter every 20,000 miles; engine air filter every 30,000;
+# coolant first at 6 years or 100,000 miles, then every 3 years or 50,000; spark plugs every 100,000; automatic
+# transmission fluid every 150,000. Biener Ford's summary gives the same intervals.
+- { make_key: FORD, name: Oil and filter change, interval_miles: 7500, interval_months: 12, labor_hours: 0.5, parts_cost_usd: 50 }
+- { make_key: FORD, name: Cabin air filter, interval_miles: 20000, labor_hours: 0.3, parts_cost_usd: 40 }
+- { make_key: FORD, name: Engine air filter, interval_miles: 30000, labor_hours: 0.3, parts_cost_usd: 40 }
+- { make_key: FORD, name: Spark plugs, interval_miles: 100000, labor_hours: 1.5, parts_cost_usd: 110 }
+- { make_key: FORD, name: Coolant change, interval_miles: 100000, interval_months: 72, labor_hours: 1.0, parts_cost_usd: 50 }
+- { make_key: FORD, name: Transmission fluid, interval_miles: 150000, labor_hours: 1.0, parts_cost_usd: 110 }
+- { make_key: LINCOLN, name: Oil and filter change, interval_miles: 7500, interval_months: 12, labor_hours: 0.5, parts_cost_usd: 70 }
+- { make_key: LINCOLN, name: Cabin air filter, interval_miles: 20000, labor_hours: 0.3, parts_cost_usd: 40 }
+- { make_key: LINCOLN, name: Engine air filter, interval_miles: 30000, labor_hours: 0.3, parts_cost_usd: 40 }
+- { make_key: LINCOLN, name: Spark plugs, interval_miles: 100000, labor_hours: 1.5, parts_cost_usd: 110 }
+- { make_key: LINCOLN, name: Coolant change, interval_miles: 100000, interval_months: 72, labor_hours: 1.0, parts_cost_usd: 50 }
+- { make_key: LINCOLN, name: Transmission fluid, interval_miles: 150000, labor_hours: 1.0, parts_cost_usd: 110 }
+# Chrysler: oil every 8,000 miles or 6 months, cabin air filter every 16,000 miles or 12 months, engine air filter
+# every 32,000 miles or 24 months (J.D. Power, "Chrysler Car Maintenance Guide", and Chrysler Dodge Jeep Crestview
+# agree; the schedule of the 2.4L Chrysler 200, so newer models may run longer).
+- { make_key: CHRYSLER, name: Oil and filter change, interval_miles: 8000, interval_months: 6, labor_hours: 0.5, parts_cost_usd: 50 }
+- { make_key: CHRYSLER, name: Cabin air filter, interval_miles: 16000, interval_months: 12, labor_hours: 0.3, parts_cost_usd: 35 }
+- { make_key: CHRYSLER, name: Engine air filter, interval_miles: 32000, interval_months: 24, labor_hours: 0.3, parts_cost_usd: 35 }
+# Dodge: the same schedule as Chrysler (J.D. Power, "Dodge Car Maintenance Guide": oil at every 8,000 miles or
+# 6 months, the air conditioner's filter at 16,000/32,000/48,000 miles, the engine filter at 32,000 miles).
+- { make_key: DODGE, name: Oil and filter change, interval_miles: 8000, interval_months: 6, labor_hours: 0.5, parts_cost_usd: 50 }
+- { make_key: DODGE, name: Cabin air filter, interval_miles: 16000, interval_months: 12, labor_hours: 0.3, parts_cost_usd: 35 }
+- { make_key: DODGE, name: Engine air filter, interval_miles: 32000, interval_months: 24, labor_hours: 0.3, parts_cost_usd: 35 }
+# Ram: cabin air filter every 20,000 miles (J.D. Power, "RAM Car Maintenance Guide", and Black Bear CDJR agree); their
+# oil and other intervals disagree, so the usual schedule stands for the rest.
+- { make_key: RAM, name: Cabin air filter, interval_miles: 20000, labor_hours: 0.3, parts_cost_usd: 35 }
+# Land Rover: service every 16,000 miles or 12 months with oil, filter and cabin air filter; engine air filter every
+# 32,000 miles or 24 months (Land Rover Schaumburg's guide to Land Rover's schedule); brake fluid every 2 years
+# (Land Rover's TOPIx maintenance schedule).
+- { make_key: LAND ROVER, name: Oil and filter change, interval_miles: 16000, interval_months: 12, labor_hours: 0.8, parts_cost_usd: 120 }
+- { make_key: LAND ROVER, name: Cabin air filter, interval_miles: 16000, interval_months: 12, labor_hours: 0.4, parts_cost_usd: 70 }
+- { make_key: LAND ROVER, name: Engine air filter, interval_miles: 32000, interval_months: 24, labor_hours: 0.4, parts_cost_usd: 70 }
+- { make_key: LAND ROVER, name: Brake fluid change, interval_months: 24, labor_hours: 1.0, parts_cost_usd: 30 }
+# Kia: oil, filter and tire rotation every 7,500 miles or 12 months (Dean McCrary Kia and Edwards Kia agree); the
+# dealers' other intervals disagree, so the usual schedule stands for the rest.
+- { make_key: KIA, name: Oil and filter change, interval_miles: 7500, interval_months: 12, labor_hours: 0.5, parts_cost_usd: 45 }
+

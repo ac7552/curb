@@ -1,0 +1,75 @@
+<%# What US owners told NHTSA about this car. Complaints can't give a "1 in X" chance, so this only
+    says which parts owners complain about more than usual. %>
+<% flagged = owners[:parts].select { |part| part[:flagged] }.first(3) %>
+<div class="owner-reports">
+  <div class="section__head">
+    <div class="stack" style="--stack: 8px">
+      <p class="muted">Owners can tell the US government when something goes wrong with their car.
+        We counted <%= number_with_delimiter(owners[:complaints]) %> reports about the <%= report.title %>.</p>
+      <% if (overall = owners[:overall]) && overall[:ratio] %>
+        <% name = VehicleName.display(make: report.make, model: report.model) %>
+        <div class="per-1000">
+          <div><span class="per-1000__number"><%= overall[:per_10k] %></span><span class="small muted">problems for every 10,000 of these cars sold (<%= overall[:years].first %>–<%= overall[:years].last %>)</span></div>
+          <div><span class="per-1000__number faint"><%= overall[:typical_per_10k] %></span><span class="small muted">for the average car from those years</span></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <% if flagged.empty? %>
+    <div class="callout callout--good">
+      <%= render "shared/status_icon", kind: :good, css: "callout__icon" %>
+      <div>
+        <p class="callout__title">Nothing stands out</p>
+        <p>Owners report problems with this car at about normal levels.</p>
+      </div>
+    </div>
+  <% else %>
+    <div class="notes">
+      <% flagged.each do |part| %>
+        <% name = part_name_and_blurb(part).first.downcase %>
+        <% fixes = owners.dig(:bulletins, :by_part, part[:slug].to_sym).to_i %>
+        <% titles = Array(owners.dig(:bulletins, :titles, part[:slug].to_sym)) %>
+        <div class="callout callout--warning">
+          <%= render "shared/status_icon", kind: :warning, css: "callout__icon" %>
+          <div class="stack" style="--stack: 6px">
+            <p class="callout__title">Lots of reports about the <%= name %></p>
+            <ul class="small" style="margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--ink-2)">
+              <% if part[:per_car_ratio].to_f >= OwnerReports::PER_CAR_FLAG %>
+                <li>Owners report <%= name %> problems <%= how_often(part[:per_car_ratio]) %> owners of most cars.</li>
+              <% elsif part[:mix_ratio].to_f >= OwnerReports::MIX_FLAG %>
+                <li><%= out_of(part[:share]).upcase_first %> reports about this car are about the <%= name %>. For most cars it's <%= out_of(part[:typical_share]) %>.</li>
+              <% end %>
+              <% if part[:year_ratio].to_f >= OwnerReports::YEAR_FLAG %>
+                <li>That's <%= part[:year_ratio].round %> times as many reports as other years of this car.</li>
+              <% end %>
+              <% if part[:rank].to_f >= OwnerReports::RANK_FLAG %>
+                <li>More <%= name %> reports than 99 out of 100 other cars from these years.</li>
+              <% end %>
+              <% if part[:average_miles].to_i >= 1_000 %>
+                <li>Problems often show up around <%= number_with_delimiter(part[:average_miles]) %> miles.</li>
+              <% end %>
+              <% if part[:towed_share].to_f >= 0.1 %>
+                <li><%= out_of(part[:towed_share]).upcase_first %> owners needed a tow.</li>
+              <% end %>
+              <% if fixes.positive? %>
+                <li>The maker sent dealers <%= pluralize(fixes, "fix", plural: "fixes") %> for the <%= name %>. Ask if they were done on this car.</li>
+              <% end %>
+            </ul>
+            <% if titles.any? %>
+              <details class="small">
+                <summary class="faint" style="cursor: pointer">See the fixes the maker sent</summary>
+                <ul style="margin: 8px 0 0; padding-left: 18px; display: grid; gap: 6px; color: var(--ink-2)">
+                  <% titles.first(4).each do |title| %><li><%= title.delete_prefix('"').delete_suffix('"') %></li><% end %>
+                </ul>
+              </details>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <p style="margin-top: 14px"><%= cite(:complaints, report, label: "owner complaints and maker bulletins at NHTSA") %></p>
+  <p class="small faint" style="margin-top: 6px">These are owner reports that no one checks. They show what owners complain about most, not the chance something breaks.
+    <% if owners[:overall] %>We divide by the number of cars sold (sales figures from Wikipedia, CC BY-SA), so popular cars aren't unfairly counted.<% else %>Cars that sell a lot get more reports, and we don't have sales figures for this car yet.<% end %></p>
+</div>

@@ -1,0 +1,55 @@
+<% title = @profile ? "#{@year} #{VehicleName.display(make: @make, model: @model)}" : "Look up a model" %>
+<% content_for :title, title %>
+<main class="page">
+  <div class="stack" style="--stack: 12px">
+    <p class="eyebrow">Model profile</p>
+    <h1 class="display display--md"><%= @profile ? "What goes wrong on the #{title}" : "What goes wrong on a car model?" %></h1>
+  </div>
+
+  <%= form_with url: model_profile_path, method: :get, class: "form mt-xl", local: true do |f| %>
+    <div class="fields">
+      <div class="field"><%= f.label :make %><%= f.text_field :make, value: @make, class: "input", list: "makes", placeholder: "BMW", required: true %></div>
+      <div class="field"><%= f.label :model %><%= f.text_field :model, value: @model, class: "input", list: "models", placeholder: "3 Series", required: true %></div>
+      <div class="field"><%= f.label :year %><%= f.number_field :year, value: (@year if @year.positive?), class: "input", inputmode: "numeric", placeholder: "2014", required: true %></div>
+      <div class="field" style="align-self: end"><%= f.submit "Look it up", class: "btn btn--dark btn--block", name: nil %></div>
+    </div>
+    <datalist id="makes"><% catalog_options.map(&:first).uniq.each do |make| %><option value="<%= make %>"><% end %></datalist>
+    <datalist id="models"><% catalog_options.each do |make, model| %><option value="<%= model %>"><%= make %></option><% end %></datalist>
+  <% end %>
+
+  <% if @profile %>
+    <section class="section" aria-labelledby="spots">
+      <div class="section__head">
+        <div class="stack" style="--stack: 8px">
+          <h2 class="display display--sm" id="spots">Parts that break more often</h2>
+          <p class="muted">For cars built <%= @profile[:build_years].first %>–<%= @profile[:build_years].last %>. "Common problem" means the records agree, or one shows it far more often than usual.</p>
+        </div>
+      </div>
+      <%= render "model_profiles/weak_spots", profile: @profile %>
+    </section>
+
+    <% if @profile[:better].any? %>
+      <section class="section" aria-labelledby="better">
+        <h2 class="display display--sm" id="better">What holds up well</h2>
+        <p class="muted" style="margin-top: 8px">UK safety checks find these parts worn or broken less often than on other cars this age.</p>
+        <div class="chips" style="margin-top: 16px">
+          <% @profile[:better].first(8).each do |part| %>
+            <span class="tag"><span class="dot" style="--dot: var(--good)"></span><%= part_name_and_blurb(part).first %></span>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
+    <section class="section stack" style="--stack: 10px">
+      <p class="h3">Where this comes from</p>
+      <ul class="disclaimer" style="margin: 0; padding-left: 18px; display: grid; gap: 6px">
+        <% if @profile.dig(:uk, :tests).to_i.positive? %>
+          <li><%= number_with_delimiter(@profile.dig(:uk, :tests)) %> UK safety inspections of these cars<%= " with this engine" unless @profile.dig(:uk, :engine_key) == "*" %>, compared with other cars the same age.</li>
+        <% end %>
+        <li>Problems US owners reported to the government, compared with other cars.</li>
+        <li>Fixes the maker sent to dealers, compared with other cars from the same years.</li>
+        <li>These show where a model tends to have trouble. They can't say whether a particular car will.</li>
+      </ul>
+    </section>
+  <% end %>
+</main>

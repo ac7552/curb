@@ -1,0 +1,46 @@
+<% content_for :title, "About" %>
+<main class="page about">
+  <section class="hero">
+    <p class="eyebrow">About Curb</p>
+    <h1 class="display display--md">Why Curb exists</h1>
+    <p class="lede">A used car's price tag tells you what it costs today, not what it costs to keep. Curb shows you that part before you buy, and where every number comes from.</p>
+  </section>
+
+  <section class="section">
+    <h2 class="eyebrow about__head">Where the numbers come from</h2>
+    <ul class="about__sources">
+      <li><p class="about__label">UK and Dutch car tests</p><p>What testers found on millions of cars like yours. That's how we know what's likely to break.</p></li>
+      <li><p class="about__label">NHTSA</p><p>US recalls, owner complaints, and the repair notes carmakers file.</p></li>
+      <li><p class="about__label">Carmakers' guides</p><p>Each maker's maintenance schedule. If we can't read one, we use its dealers' or J.D. Power's, only where they agree.</p></li>
+      <li><p class="about__label">Wikimedia Commons</p><p>The car photos, each credited to who took it.</p></li>
+    </ul>
+  </section>
+
+  <section class="section about__pair">
+    <div>
+      <h2 class="eyebrow about__head">How the math works</h2>
+      <ul class="about__list">
+        <li><strong>We count, not guess.</strong> If 1 in 5 cars like yours needed brakes, we say 1 in 5.</li>
+        <li><strong>Free fixes aren't your cost.</strong> Repairs a warranty or recall would pay for are left out.</li>
+        <li><strong>AI helps read, never decides.</strong> It files testers' notes under parts like "brakes," and reads a maker's guide when our rules can't. Every schedule is checked before reports use it.</li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="eyebrow about__head">What we can't promise</h2>
+      <ul class="about__list">
+        <li><strong>These are best guesses.</strong> Your car could do better or worse than cars like it.</li>
+        <li><strong>Most test records are from the UK and the Netherlands.</strong> Roads, weather and some parts differ.</li>
+        <li><strong>We can't see the car.</strong> Have a mechanic you trust check it before you buy.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <%= link_to "Check a car", authenticated? ? new_report_path : new_registration_path, class: "btn btn--dark" %>
+  </section>
+
+  <footer class="footer">
+    <span>© <%= Date.current.year %> Curb</span>
+    <span>Best guesses from real inspection records, not promises.</span>
+  </footer>
+</main>

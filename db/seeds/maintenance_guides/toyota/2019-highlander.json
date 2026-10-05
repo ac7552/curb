@@ -1,0 +1,524 @@
+{
+  "make": "Toyota",
+  "model": "Highlander",
+  "model_year": 2019,
+  "status": "ok",
+  "kind": "maintenance_guide",
+  "url": "https://assets.sia.toyota.com/publications/en/omms-s/T-MMS-19Highlander/pdf/T-MMS-19Highlander.pdf",
+  "title": "Toyota 2019 Highlander Warranty & Maintenance Guide",
+  "rows": [
+    {
+      "name": "Tire rotation",
+      "guide_wording": "Rotate tires",
+      "interval_miles": 5000,
+      "interval_months": 6,
+      "first_due_miles": null,
+      "applies_to": null,
+      "source_page": 39,
+      "source_url": "https://assets.sia.toyota.com/publications/en/omms-s/T-MMS-19Highlander/pdf/T-MMS-19Highlander.pdf",
+      "source_title": "Toyota 2019 Highlander Warranty & Maintenance Guide"
+    },
+    {
+      "name": "Cabin air filter",
+      "guide_wording": "Replace cabin air filter",
+      "interval_miles": 10000,
+      "interval_months": 12,
+      "first_due_miles": null,
+      "applies_to": null,
+      "source_page": 39,
+      "source_url": "https://assets.sia.toyota.com/publications/en/omms-s/T-MMS-19Highlander/pdf/T-MMS-19Highlander.pdf",
+      "source_title": "Toyota 2019 Highlander Warranty & Maintenance Guide"
+    },
+    {
+      "name": "Oil and filter change",
+      "guide_wording": "Replace engine oil and oil filter",
+      "interval_miles": 10000,
+      "interval_months": 12,
+      "first_due_miles": null,
+      "applies_to": null,
+      "source_page": 39,
+      "source_url": "https://assets.sia.toyota.com/publications/en/omms-s/T-MMS-19Highlander/pdf/T-MMS-19Highlander.pdf",
+      "source_title": "Toyota 2019 Highlander Warranty & Maintenance Guide"
+    },
+    {
+      "name": "Engine air filter",
+      "guide_wording": "Replace engine air filter",
+      "interval_miles": 30000,
+      "interval_months": 36,
+      "first_due_miles": null,
+      "applies_to": null,
+      "source_page": 42,
+      "source_url": "https://assets.sia.toyota.com/publications/en/omms-s/T-MMS-19Highlander/pdf/T-MMS-19Highlander.pdf",
+      "source_title": "Toyota 2019 Highlander Warranty & Maintenance Guide"
+    },
+    {
+      "name": "Spark plugs",
+      "guide_wording": "Replace spark plugs (2GR-FKS engine only)",
+      "interval_miles": 60000,
+      "interval_months": 72,
+      "first_due_miles": null,
+      "applies_to": "2GR-FKS engine only",
+      "source_page": 46,
+      "source_url": "https://assets.sia.toyota.com/publications/en/omms-s/T-MMS-19Highlander/pdf/T-MMS-19Highlander.pdf",
+      "source_title": "Toyota 2019 Highlander Warranty & Maintenance Guide"
+    },
+    {
+      "name": "Coolant change",
+      "guide_wording": "Replace engine coolant",
+      "interval_miles": 100000,
+      "interval_months": 120,
+      "first_due_miles": null,
+      "applies_to": null,
+      "source_page": 51,
+      "source_url": "https://assets.sia.toyota.com/publications/en/omms-s/T-MMS-19Highlander/pdf/T-MMS-19Highlander.pdf",
+      "source_title": "Toyota 2019 Highlander Warranty & Maintenance Guide"
+    },
+    {
+      "name": "Spark plugs",
+      "guide_wording": "Replace spark plugs",
+      "interval_miles": 120000,
+      "interval_months": 144,
+      "first_due_miles": null,
+      "applies_to": null,
+      "source_page": 54,
+      "source_url": "https://assets.sia.toyota.com/publications/en/omms-s/T-MMS-19Highlander/pdf/T-MMS-19Highlander.pdf",
+      "source_title": "Toyota 2019 Highlander Warranty & Maintenance Guide"
+    }
+  ],
+  "problems": [],
+  "layout": "mileage_checklists",
+  "skipped": [
+    {
+      "name": "Replace vacuum pump for brake booster (2GR-FKS engine only)",
+      "why": "not an item the schedule prices yet"
+    }
+  ],
+  "read_with": "rules",
+  "read_at": "2026-10-04T06:25:46Z",
+  "checklists": [
+    {
+      "miles": 5000,
+      "page": 39,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 10000,
+      "page": 39,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 15000,
+      "page": 40,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 20000,
+      "page": 41,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 25000,
+      "page": 41,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 30000,
+      "page": 42,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 35000,
+      "page": 43,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 40000,
+      "page": 43,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 45000,
+      "page": 44,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 50000,
+      "page": 45,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 55000,
+      "page": 45,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 60000,
+      "page": 46,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace spark plugs (2GR-FKS engine only)",
+          "action": "replace",
+          "applies_to": "2GR-FKS engine only"
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 65000,
+      "page": 47,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 70000,
+      "page": 47,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 75000,
+      "page": 48,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 80000,
+      "page": 49,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 85000,
+      "page": 49,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 90000,
+      "page": 50,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 95000,
+      "page": 51,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 100000,
+      "page": 51,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine coolant",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 105000,
+      "page": 52,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 110000,
+      "page": 53,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 115000,
+      "page": 53,
+      "items": [
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    },
+    {
+      "miles": 120000,
+      "page": 54,
+      "items": [
+        {
+          "name": "Replace cabin air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine air filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace engine oil and oil filter",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace spark plugs",
+          "action": "replace",
+          "applies_to": null
+        },
+        {
+          "name": "Replace vacuum pump for brake booster (2GR-FKS engine only)",
+          "action": "replace",
+          "applies_to": "2GR-FKS engine only"
+        },
+        {
+          "name": "Rotate tires",
+          "action": "rotate",
+          "applies_to": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+<% if record.errors.any? %>
+  <div class="errors" role="alert">
+    <strong><%= record.errors.count == 1 ? "One thing to fix" : "#{record.errors.count} things to fix" %></strong>
+    <ul>
+      <% record.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

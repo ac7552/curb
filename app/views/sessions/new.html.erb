@@ -1,0 +1,26 @@
+<% content_for :title, "Sign in" %>
+<main class="page page--narrow">
+  <div class="stack" style="--stack: 28px">
+    <div class="stack" style="--stack: 10px">
+      <h1 class="display display--md">Welcome back</h1>
+      <p class="muted">Sign in to see your saved checks.</p>
+    </div>
+
+    <%= form_with url: session_path, class: "form form--tight" do |form| %>
+      <div class="field">
+        <%= form.label :email_address, "Email" %>
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "you@example.com", value: params[:email_address], class: "input" %>
+      </div>
+      <div class="field">
+        <div class="row row--between">
+          <%= form.label :password, class: "field__label" %>
+          <%= link_to "Forgot it?", new_password_path, class: "small faint" %>
+        </div>
+        <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: "input" %>
+      </div>
+      <%= form.submit "Sign in", class: "btn btn--dark btn--block" %>
+    <% end %>
+
+    <p class="small muted center">New to Curb? <%= link_to "Create an account", new_registration_path %></p>
+  </div>
+</main>

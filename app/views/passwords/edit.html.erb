@@ -1,0 +1,17 @@
+<% content_for :title, "Choose a new password" %>
+<main class="page page--narrow">
+  <div class="stack" style="--stack: 28px">
+    <h1 class="display display--md">Choose a new password</h1>
+    <%= form_with url: password_path(params[:token]), method: :put, class: "form form--tight" do |form| %>
+      <div class="field">
+        <%= form.label :password, "New password" %>
+        <%= form.password_field :password, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72, class: "input" %>
+      </div>
+      <div class="field">
+        <%= form.label :password_confirmation, "Confirm password" %>
+        <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72, class: "input" %>
+      </div>
+      <%= form.submit "Save password", class: "btn btn--dark btn--block" %>
+    <% end %>
+  </div>
+</main>

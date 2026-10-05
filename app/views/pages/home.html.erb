@@ -1,0 +1,59 @@
+<% content_for :title, "Know what a car really costs" %>
+<main class="page">
+  <div class="pattern" aria-hidden="true"></div>
+
+  <section class="hero">
+    <p class="eyebrow">For the dealer lot</p>
+    <h1 class="display">The price is <span class="fade-text">just the start.</span></h1>
+    <p class="lede">Type in a used car's VIN. Curb shows what might break, what the warranty pays for, the upkeep coming up, and what the car will really cost you.</p>
+    <div class="row">
+      <%= link_to "Check a car", new_registration_path, class: "btn btn--dark" %>
+      <%= link_to "Sign in", new_session_path, class: "btn btn--ghost" %>
+    </div>
+  </section>
+
+  <section class="preview" aria-label="Example result">
+    <div class="card stack" style="--stack: 22px">
+      <div class="row row--between">
+        <div>
+          <p class="small faint">Example · 2018 Ford Focus · 52,000 mi · 3 years</p>
+          <p class="h2">What this car will really cost you</p>
+        </div>
+        <span class="tag"><span class="dot" style="--dot: var(--dot-orange)"></span>Illustrative numbers</span>
+      </div>
+      <p class="hero-figure">$14,290</p>
+      <p class="lede" style="max-width: none">That's over 3 years: the $9,500 price, plus about $4,790 to keep it running.</p>
+      <div class="grid-4">
+        <div class="stat"><span class="stat__label">Most likely to break</span><span class="stat__value">Suspension</span><span class="stat__note">About 1 in 3 chance in 3 years</span></div>
+        <div class="stat"><span class="stat__label">Warranty pays</span><span class="stat__value">$0</span><span class="stat__note">The warranty has ended</span></div>
+        <div class="stat"><span class="stat__label">Save each month</span><span class="stat__value">$133</span><span class="stat__note">To cover upkeep and repairs</span></div>
+        <div class="stat"><span class="stat__label">Big bill risk</span><span class="stat__value">1 in 4</span><span class="stat__note">Chance of one bill over $1,500</span></div>
+      </div>
+    </div>
+    <div class="card__caption"><span>One page. <strong>The real price</strong>, for each year you own it.</span></div>
+  </section>
+
+  <section class="section">
+    <div class="section__head"><h2 class="display display--sm">How it works</h2></div>
+    <div class="grid-2 steps">
+      <div class="step"><p class="h3">Find the car</p><p>Type the VIN, or just the make, model and year.</p></div>
+      <div class="step"><p class="h3">Tell us your plans</p><p>Add the price, the miles, and how long you'll keep it.</p></div>
+      <div class="step"><p class="h3">See the real price</p><p>See what might break, what it costs to fix, and what you'll pay each month.</p></div>
+      <div class="step"><p class="h3">Get a better deal</p><p>Show the seller the recalls and problems we found. Ask for a lower price.</p></div>
+    </div>
+  </section>
+
+  <section class="section center">
+    <p class="small faint">Built on public car records</p>
+    <div class="sources" style="margin-top: 14px">
+      <span class="tag"><span class="dot" style="--dot: var(--dot-green)"></span>UK MOT tests</span>
+      <span class="tag"><span class="dot" style="--dot: var(--dot-orange)"></span>Dutch RDW inspections</span>
+      <span class="tag"><span class="dot" style="--dot: var(--dot-blue)"></span>NHTSA recalls and VINs</span>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>© <%= Date.current.year %> Curb</span>
+    <span>Best guesses from real inspection records, not promises. <%= link_to "Where our numbers come from", about_path %> · <%= link_to "Plans", plans_path %></span>
+  </footer>
+</main>

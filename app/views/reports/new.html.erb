@@ -1,0 +1,262 @@
+<% content_for :title, "New check" %>
+<main class="page page--wiz" data-controller="loader">
+  <%# Four quick questions, one per screen: tap a make, a year, a model, then type two numbers. Every
+      answer is a real form field, so the server validates exactly what it always did. %>
+  <%# autocomplete off: browsers otherwise bring back an old country or answer on Back, unseen. %>
+  <%= form_with model: @report, class: "wiz", autocomplete: "off",
+        data: { controller: "report-form",
+                report_form_markets_value: report_form_markets.to_json,
+                report_form_makes_value: report_form_makes.to_json,
+                report_form_start_value: report_form_start_step(@report),
+                report_form_lookup_url_value: vehicle_lookup_path,
+                report_form_models_url_value: vehicle_models_path,
+                action: "submit->report-form#submit turbo:submit-start->loader#show turbo:submit-end->loader#hide" } do |f| %>
+    <%= f.hidden_field :lookup_mode, data: { report_form_target: "lookupMode" } %>
+    <%= f.hidden_field :make, data: { report_form_target: "make" } %>
+    <%= f.hidden_field :model_year, data: { report_form_target: "modelYear" } %>
+    <%= f.hidden_field :model, data: { report_form_target: "model" } %>
+    <%= f.hidden_field :first_used_on, data: { report_form_target: "firstUsed" } %>
+    <%= f.hidden_field :asking_price, data: { report_form_target: "price" } %>
+    <%= f.hidden_field :odometer, value: @report.odometer || @report.odometer_in_unit, data: { report_form_target: "odometer" } %>
+
+    <div class="wiz__main">
+      <div class="wiz__top">
+        <nav class="trail" aria-label="Steps" data-report-form-target="trail"></nav>
+        <%# Sets the money and distance units for everything, so it says what it is. %>
+        <label class="country-pick">
+          <span>Buying in</span>
+          <%= f.select :country, ReportsHelper::COUNTRY_LABELS.invert, {}, autocomplete: "off",
+                data: { action: "report-form#countryChanged", report_form_target: "country" } %>
+        </label>
+      </div>
+
+      <%= render "shared/errors", record: @report %>
+      <% unless Current.user.remaining(:check).nil? %>
+        <p class="checks-left"><%= plan_usage_line(Current.user) %><% if Current.user.remaining(:check).zero? %> · <%= link_to "Get unlimited with Plus", plans_path %><% end %></p>
+      <% end %>
+
+      <section class="wiz__step" data-report-form-target="step" data-step="0" aria-labelledby="step-make">
+        <h1 class="wiz__title" id="step-make">Which make?</h1>
+        <p class="wiz__sub">Tap the badge, or start typing and press Enter.</p>
+        <label class="wiz-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="sr-only">Search makes</span>
+          <input type="search" placeholder="Search all makes" autocomplete="off" spellcheck="false"
+                 data-report-form-target="makeSearch" data-action="input->report-form#filterMakes keydown.enter->report-form#pickFirstMake">
+        </label>
+        <div class="make-grid" data-report-form-target="makeGrid"></div>
+        <button type="button" class="link-btn wiz__more" data-report-form-target="moreMakes" data-action="report-form#showAllMakes" hidden></button>
+      </section>
+
+      <section class="wiz__step" data-report-form-target="step" data-step="1" aria-labelledby="step-year" hidden>
+        <h1 class="wiz__title" id="step-year">What year?</h1>
+        <p class="wiz__sub">The model year. It's on the listing, or the sticker in the door frame.</p>
+        <div class="year-grid" data-report-form-target="yearGrid"></div>
+        <button type="button" class="link-btn wiz__more" data-report-form-target="olderYears" data-action="report-form#showOlderYears">Older years</button>
+      </section>
+
+      <section class="wiz__step" data-report-form-target="step" data-step="2" aria-labelledby="step-model" hidden>
+        <h1 class="wiz__title" id="step-model">Which <span data-report-form-target="modelHeading">model</span>?</h1>
+        <p class="wiz__sub" data-report-form-target="modelStatus">Tap the model.</p>
+        <label class="wiz-search" data-report-form-target="modelSearchBox" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="sr-only">Search models</span>
+          <input type="search" placeholder="Search models" autocomplete="off" spellcheck="false"
+                 data-report-form-target="modelSearch" data-action="input->report-form#filterModels keydown.enter->report-form#pickFirstModel">
+        </label>
+        <div class="pick-chips" data-report-form-target="modelGrid"></div>
+        <button type="button" class="link-btn wiz__more" data-report-form-target="moreModels" data-action="report-form#showAllModels" hidden></button>
+        <div class="wiz__other">
+          <span>Not listed?</span>
+          <div class="input-group">
+            <input type="text" class="input" placeholder="Type the model" autocomplete="off" aria-label="Model name"
+                   data-report-form-target="modelOther" data-action="keydown.enter->report-form#useTypedModel">
+            <button type="button" class="btn btn--ghost" data-action="report-form#useTypedModel">Use it</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="wiz__step" data-report-form-target="step" data-step="3" aria-labelledby="step-price" hidden>
+        <h1 class="wiz__title" id="step-price">Price and miles</h1>
+        <p class="wiz__sub">Two numbers, then you're done.</p>
+        <div class="big-fields">
+          <div class="big-field">
+            <label for="price-display">What the seller is asking</label>
+            <div class="big-input" data-report-form-target="priceBox">
+              <span data-report-form-target="symbol"><%= @report.market.symbol %></span>
+              <input id="price-display" inputmode="numeric" enterkeyhint="next" autocomplete="off" placeholder="12,500"
+                     value="<%= number_with_delimiter(@report.asking_price&.to_i) %>"
+                     data-report-form-target="priceDisplay" data-action="input->report-form#numberTyped keydown.enter->report-form#priceEntered">
+            </div>
+          </div>
+          <div class="big-field">
+            <label for="odometer-display"><span data-report-form-target="distanceWord"><%= distance_word(@report.market).capitalize %></span> on the car now</label>
+            <div class="big-input" data-report-form-target="odometerBox">
+              <input id="odometer-display" inputmode="numeric" enterkeyhint="go" autocomplete="off" placeholder="52,000"
+                     value="<%= number_with_delimiter(@report.odometer || @report.odometer_in_unit) %>"
+                     data-report-form-target="odometerDisplay" data-action="input->report-form#numberTyped keydown.enter->report-form#milesEntered">
+              <span data-report-form-target="unit"><%= @report.market.distance_unit %></span>
+            </div>
+            <button type="button" class="quick-pick" data-report-form-target="typicalMiles" data-action="report-form#useTypicalMiles" hidden></button>
+          </div>
+        </div>
+
+        <button type="submit" class="go" data-report-form-target="go"><span data-report-form-target="goLabel">See the real cost</span><span class="go__arrow" aria-hidden="true">→</span></button>
+
+        <%# The rest have working defaults. They're folded away with the defaults stated, and spring open
+            if any of them is already set, which is what happens when the form comes back with errors. %>
+        <% assumptions_changed = @report.ownership_years != 3 || @report.yearly_distance.present? ||
+                                 @report.shop_type != "independent" || @report.addon_warranty != "none" ||
+                                 @report.monthly_budget.present? || @report.emergency_savings.present? ||
+                                 @report.region != LaborRate.regions_for(@report.country).first %>
+        <details class="assumptions wiz__assumptions" <%= "open" if assumptions_changed || @report.errors.any? %>>
+          <summary class="assumptions__summary">
+            <span class="assumptions__title">Change the assumptions</span>
+            <span class="assumptions__detail">
+              <%= pluralize(@report.ownership_years, "year") %> ·
+              <%= number_with_delimiter(Market.from_miles(@report.miles_per_year || @report.market.default_miles_per_year, @report.country)) %>
+              <span data-report-form-target="unit"><%= @report.market.distance_unit %></span> a year ·
+              <%= @report.shop_type == "dealer" ? "dealer" : "local shop" %> ·
+              <%= @report.addon_warranty == "none" ? "no extra warranty" : "extra warranty" %>
+            </span>
+          </summary>
+
+          <div class="assumptions__body">
+          <fieldset class="fieldset">
+            <legend>How you'll use it</legend>
+            <div class="fields">
+              <div class="field">
+                <span class="field__label" id="years-label">How long will you keep it?</span>
+                <div class="stepper" role="group" aria-labelledby="years-label">
+                  <button type="button" aria-label="Fewer years" data-action="report-form#fewerYears">−</button>
+                  <output data-report-form-target="yearsOutput" aria-live="polite"><%= pluralize(@report.ownership_years, "year") %></output>
+                  <button type="button" aria-label="More years" data-action="report-form#moreYears">+</button>
+                </div>
+                <%= f.hidden_field :ownership_years, data: { report_form_target: "years" } %>
+              </div>
+              <div class="field">
+                <%= f.label :yearly_distance, "How much you drive in a year" %>
+                <div class="suffixed"><%= f.number_field :yearly_distance, value: @report.yearly_distance || @report.yearly_distance_in_unit, class: "input", inputmode: "numeric", min: 500, step: 500,
+                      placeholder: number_with_delimiter(Market.from_miles(@report.market.default_miles_per_year, @report.country)), data: { report_form_target: "yearlyDistance" } %><span data-report-form-target="unit"><%= @report.market.distance_unit %></span></div>
+                <span class="field__hint">Not sure? Leave it blank and we'll use a normal amount.</span>
+              </div>
+            </div>
+            <div class="fields">
+              <div class="field">
+                <%= f.label :region, "Where you live" %>
+                <%= f.select :region, LaborRate.regions_for(@report.country), {}, class: "input", data: { report_form_target: "region" } %>
+              </div>
+              <div class="field">
+                <span class="field__label">Where you'll get it fixed</span>
+                <div class="chips">
+                  <label class="chip"><%= f.radio_button :shop_type, "independent" %>Local repair shop</label>
+                  <label class="chip"><%= f.radio_button :shop_type, "dealer" %>Car dealer (costs more)</label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="fieldset">
+            <legend>About the car <span class="faint" style="font-weight: 400">(optional)</span></legend>
+            <p class="fieldset__hint">The engine sharpens the repair odds. Leave it blank if you're not sure.</p>
+            <div class="fields">
+              <div class="field">
+                <%= f.label :engine %>
+                <%= f.text_field :engine, class: "input", placeholder: "1.5L", data: { report_form_target: "engine" } %>
+              </div>
+              <div class="field">
+                <%= f.label :fuel_type, "Fuel" %>
+                <%= f.text_field :fuel_type, class: "input", list: "fuels", placeholder: "Gasoline", data: { report_form_target: "fuel" } %>
+                <datalist id="fuels"><% %w[Gasoline Diesel Hybrid Electric].each do |fuel| %><option value="<%= fuel %>"><% end %></datalist>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="fieldset">
+            <legend>Warranty</legend>
+            <p class="fieldset__hint">A warranty pays for some repairs. We already know the car maker's warranty. Is the seller giving you any extra?</p>
+            <div class="chips">
+              <label class="chip"><%= f.radio_button :addon_warranty, "none", data: { action: "report-form#addonChanged" } %>No extra warranty</label>
+              <label class="chip"><%= f.radio_button :addon_warranty, "cpo", data: { action: "report-form#addonChanged" } %>Certified pre-owned</label>
+              <label class="chip"><%= f.radio_button :addon_warranty, "extended", data: { action: "report-form#addonChanged" } %>Extended warranty</label>
+            </div>
+            <div class="stack" data-report-form-target="addonPanel" <%= "hidden" if @report.addon_warranty == "none" %>>
+              <div class="fields">
+                <div class="field">
+                  <%= f.label :addon_years, "How many years it lasts" %>
+                  <%= f.number_field :addon_years, class: "input", inputmode: "numeric", min: 1, max: 10, placeholder: "3" %>
+                </div>
+                <div class="field">
+                  <%= f.label :addon_miles, "How many miles it lasts" %>
+                  <div class="suffixed"><%= f.number_field :addon_miles, class: "input", inputmode: "numeric", min: 0, step: 1000, placeholder: "Unlimited" %><span data-report-form-target="unit"><%= @report.market.distance_unit %></span></div>
+                </div>
+              </div>
+              <div class="chips">
+                <label class="chip"><%= f.radio_button :addon_coverage, "powertrain" %>Engine and transmission only</label>
+                <label class="chip"><%= f.radio_button :addon_coverage, "comprehensive" %>Most parts</label>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="fieldset">
+            <legend>Your budget <span class="faint" style="font-weight: 400">(optional)</span></legend>
+            <p class="fieldset__hint">Add these and we'll tell you if this car fits your money.</p>
+            <div class="fields">
+              <div class="field">
+                <%= f.label :monthly_budget, "How much can you spend each month on upkeep and repairs?" %>
+                <div class="prefixed"><span data-report-form-target="symbol"><%= @report.market.symbol %></span><%= f.number_field :monthly_budget, class: "input", inputmode: "decimal", min: 0, step: 10, placeholder: "100" %></div>
+              </div>
+              <div class="field">
+                <%= f.label :emergency_savings, "How much do you have saved for emergencies?" %>
+                <div class="prefixed"><span data-report-form-target="symbol"><%= @report.market.symbol %></span><%= f.number_field :emergency_savings, class: "input", inputmode: "decimal", min: 0, step: 100, placeholder: "1,500" %></div>
+              </div>
+            </div>
+          </fieldset>
+          </div>
+        </details>
+        <p class="wiz__fine">Best guesses from inspection and owner records, not promises.</p>
+      </section>
+    </div>
+
+    <aside class="wiz__aside">
+      <div class="live-card" aria-live="polite">
+        <p class="live-card__label">Your check</p>
+        <div class="live-card__head">
+          <span data-report-form-target="cardLogo"><span class="make-logo make-logo--mono make-logo--empty" aria-hidden="true">?</span></span>
+          <p class="live-card__title" data-report-form-target="cardTitle"><span class="ghost">Make and model</span></p>
+        </div>
+        <div class="live-card__facts">
+          <span class="odo is-empty" data-report-form-target="cardOdo"><span class="odo__digits">––,–––</span><span class="odo__unit"><%= @report.market.distance_unit %></span></span>
+          <span class="live-card__asking is-empty" data-report-form-target="cardAsking">Asking price</span>
+        </div>
+        <p class="live-card__foot">We add likely repairs, upkeep and warranty to get the real cost.</p>
+      </div>
+
+      <%# The shortcut: a VIN (US) or plate (UK, Netherlands) fills in the car and skips to the price. %>
+      <details class="lookup-card" data-report-form-target="lookupCard" <%= "open" if @report.vin.present? || @report.plate.present? %>>
+        <summary><span data-report-form-target="lookupPrompt">Have the VIN?</span> <b>Paste it</b> and skip ahead.</summary>
+        <div class="lookup-card__body">
+          <div data-report-form-target="vinPanel">
+            <label class="sr-only" for="report_vin">VIN</label>
+            <div class="input-group">
+              <%= f.text_field :vin, class: "input input--mono", maxlength: 17, autocomplete: "off", autocapitalize: "characters", spellcheck: false,
+                    placeholder: "17 characters", data: { report_form_target: "vin", action: "keydown.enter->report-form#lookupOnEnter" } %>
+              <button type="button" class="btn btn--dark" data-action="report-form#lookup">Find</button>
+            </div>
+            <p class="field__hint">Bottom of the windshield on the driver's side, or inside the driver's door.</p>
+          </div>
+          <div data-report-form-target="platePanel" hidden>
+            <label class="sr-only" for="report_plate">Plate</label>
+            <div class="input-group">
+              <%= f.text_field :plate, class: "input input--mono", maxlength: 10, autocomplete: "off", autocapitalize: "characters", spellcheck: false,
+                    placeholder: "AB12 CDE", data: { report_form_target: "plate", action: "keydown.enter->report-form#lookupOnEnter" } %>
+              <button type="button" class="btn btn--dark" data-action="report-form#lookup">Find</button>
+            </div>
+          </div>
+          <p class="small" role="status" data-report-form-target="lookupMessage" hidden></p>
+        </div>
+      </details>
+    </aside>
+  <% end %>
+  <%= render "shared/loader" %>
+</main>

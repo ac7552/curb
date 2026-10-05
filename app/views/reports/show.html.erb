@@ -1,0 +1,326 @@
+<% r = @report.result %>
+<% market = @report.market %>
+<% summary = r[:summary] %>
+<% years = pluralize(@report.ownership_years, "year") %>
+<% verdict = report_verdict(@report) %>
+<% owners = @report.live[:owner_reports] %>
+<% profile = @report.live[:profile] || { weak_spots: [], uk: {} } %>
+<% recalls = Array(@report.live[:recalls]) %>
+<% programs = Array(@report.live[:programs]) %>
+<% history = @report.live[:history] %>
+<% top = profile[:weak_spots].first %>
+<% last_test = history && history[:tests].present? ? history[:tests].first : nil %>
+<% rolled_back = last_test && history[:tests].filter_map { _1[:mileage] }.each_cons(2).any? { |newer, older| newer < older } %>
+<% todo_count = 1 + (@report.country == "US" ? 1 + (programs.any? ? 1 : 0) : 0) + (last_test || history&.dig(:defects).present? ? 1 : 0) %>
+<% set_aside = about_amount(summary[:maintenance]) + about_amount(summary[:repairs]) %>
+<% content_for :title, @report.title %>
+<% content_for :body_class, "body--report" %>
+<%# Built to decide in under a minute. The top card answers (photo, verdict, what it costs); the tabs below
+    hold why, what to do before buying, upkeep and everything else, one at a time instead of one long page.
+    Laid out like Abel's product cards: three panels edge to edge, hairlines, short uppercase labels. %>
+<main class="rpt" data-controller="chapters">
+  <div class="rpt-wrap">
+    <div class="rpt-bar">
+      <p class="rpt-label"><%= @shared ? "Shared with you" : "Checked #{time_ago_in_words(@report.calculated_at || @report.created_at)} ago" %></p>
+      <% unless @shared %>
+        <div class="rpt-bar__actions no-print">
+          <button type="button" class="rpt-link" data-controller="clipboard" data-clipboard-url-value="<%= shared_report_url(@report.share_token) %>"
+                  data-clipboard-title-value="<%= @report.title %>" data-action="clipboard#share"><span data-clipboard-target="label">Share</span></button>
+          <%= button_to "Delete", report_path(@report), method: :delete, class: "rpt-link", form: { data: { turbo_confirm: "Delete this check?" } } %>
+        </div>
+      <% end %>
+    </div>
+    <header class="rpt-intro">
+      <h1 class="rpt-intro__title"><%= @report.title %><sup>[ <%= @report.ownership_years %> yrs ]</sup></h1>
+      <p class="rpt-intro__text">
+        <%= distance(@report.current_mileage, market).sub(/\bmi\z/, "miles") %> on it. You plan to keep it <%= years %> and drive <%= distance(@report.miles_per_year, market).sub(/\bmi\z/, "miles") %> a year.
+      </p>
+    </header>
+
+    <% if r[:data][:demo] %>
+      <div class="callout callout--warning rpt-demo">
+        <%= render "shared/status_icon", kind: :warning, css: "callout__icon" %>
+        <div>
+          <p class="callout__title">Practice numbers</p>
+          <p>These numbers come from made-up test records, not real car inspections. Don't use them to decide on a car yet.</p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <%# The answer: photo, verdict and the bill, side by side %>
+  <section class="rpt-band" aria-label="Our answer">
+    <% if @report.live.key?(:photo) %>
+      <%= render "reports/photo", photo: @report.live[:photo], name: @report.model %>
+    <% elsif @shared %>
+      <%= render "reports/photo", photo: nil, name: @report.model %>
+    <% else %>
+      <%= turbo_frame_tag "report_photo", src: photo_report_path(@report), loading: :lazy, class: "rpt-photo" do %><div class="rpt-photo__none" aria-hidden="true"><span><%= @report.model %></span></div><% end %>
+    <% end %>
+
+    <div class="rpt-band__verdict verdict--<%= verdict[:kind] %>">
+      <p class="rpt-tag"><i></i><%= verdict[:label] %></p>
+      <div class="rpt-band__center">
+        <p class="rpt-total"><%= money(bill_total(summary), market) %></p>
+        <p class="rpt-total__sub">to own it for <%= years %></p>
+      </div>
+      <div class="rpt-band__foot">
+        <p class="rpt-label">Our verdict</p>
+        <p class="rpt-band__verdict-text"><%= verdict[:text] %></p>
+      </div>
+    </div>
+
+    <div class="rpt-band__spec">
+      <dl class="rpt-notes">
+        <div><dt>Price</dt><dd><%= money(summary[:price], market) %></dd></div>
+        <div><dt>Upkeep</dt><dd><%= about_money(summary[:maintenance], market) %> <span>oil, filters, tires</span></dd></div>
+        <div><dt>Repairs</dt><dd><%= about_money(summary[:repairs], market) %> <span>small fixes</span></dd></div>
+        <div class="rpt-notes__total"><dt>Total</dt><dd><%= money(bill_total(summary), market) %></dd></div>
+      </dl>
+      <div class="rpt-mood">
+        <p class="rpt-label">Each month</p>
+        <p class="rpt-mood__line">Save <%= about_money(summary[:monthly_running], market) %>.<span>That's <%= money(set_aside, market) %> for upkeep and repairs, split over <%= @report.ownership_years * 12 %> months.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <%# The rest, one tab at a time %>
+  <nav class="rpt-tabs no-print" aria-label="Report sections">
+    <div class="rpt-wrap rpt-tabs__row" role="tablist">
+      <button type="button" class="rpt-tab" role="tab" aria-selected="true" aria-controls="why" data-chapters-target="tab" data-action="chapters#show">Why</button>
+      <button type="button" class="rpt-tab" role="tab" aria-selected="false" aria-controls="todo" data-chapters-target="tab" data-action="chapters#show">Before you buy<sup>[ <%= todo_count %> ]</sup></button>
+      <% if r[:visits].present? %>
+        <button type="button" class="rpt-tab" role="tab" aria-selected="false" aria-controls="upkeep" data-chapters-target="tab" data-action="chapters#show">Upkeep<sup>[ <%= r[:visits].size %> ]</sup></button>
+      <% end %>
+      <button type="button" class="rpt-tab" role="tab" aria-selected="false" aria-controls="details" data-chapters-target="tab" data-action="chapters#show">Details</button>
+    </div>
+  </nav>
+
+  <div class="rpt-wrap">
+    <section class="rpt-panel is-on" id="why" role="tabpanel" aria-labelledby="why-title" data-chapters-target="panel">
+      <h2 class="rpt-panel__title" id="why-title"><%= { good: "Why it's a good pick", warning: "Why to be careful", critical: "Why we'd pass" }.fetch(verdict[:kind], "What we found") %></h2>
+      <ul class="reasons rpt-reasons">
+        <% verdict[:reasons].each do |kind, headline, meaning, source| %>
+          <li class="reason reason--<%= kind %>">
+            <p class="rpt-label rpt-reasons__tag"><i></i><%= { good: "Good sign", warning: "Watch out", critical: "Problem", info: "Good to know" }.fetch(kind, "Good to know") %></p>
+            <strong class="reason__headline"><%= headline %></strong><span class="reason__meaning"><%= meaning %></span>
+            <% if source %><%= cite_with_count(source, @report) %><% end %>
+          </li>
+        <% end %>
+        <% if summary[:break_bank_any] %>
+          <% kind = break_bank_status(summary[:break_bank_any]) %>
+          <li class="reason reason--<%= kind %>">
+            <p class="rpt-label rpt-reasons__tag"><i></i>Your savings</p>
+            <strong class="reason__headline"><%= likelihood_word(summary[:break_bank_any]) %> to need a repair bigger than your <%= money(@report.emergency_savings, market) %> savings</strong>
+            <span class="reason__meaning">It happens to <%= cars_like_this(summary[:break_bank_any]) %> in <%= years %>.</span>
+          </li>
+        <% end %>
+        <% if (budget = r[:budget]) %>
+          <% kind = budget[:fits] ? :good : :warning %>
+          <li class="reason reason--<%= kind %>">
+            <p class="rpt-label rpt-reasons__tag"><i></i>Your budget</p>
+            <strong class="reason__headline"><%= budget[:fits] ? "Fits" : "Doesn't always fit" %> your <%= money(budget[:monthly_budget], market) %> a month</strong>
+            <span class="reason__meaning">The most you'd need is about <%= about_money(budget[:worst_monthly], market) %> a month, in year <%= budget[:worst_year] %>.</span>
+          </li>
+        <% end %>
+      </ul>
+      <p class="rpt-note">
+        Not counted: big repairs like a new engine or transmission.
+        <%= verdict[:costly] ? "On a #{VehicleName.display_make(@report.make)} these often cost thousands." : "Most cars won't need one, but one can cost thousands." %>
+      </p>
+      <div class="rpt-next no-print"><button type="button" class="rpt-btn" data-action="chapters#show" aria-controls="todo">Next: Before you buy →</button></div>
+    </section>
+
+    <section class="rpt-panel" id="todo" role="tabpanel" aria-labelledby="todo-title" data-chapters-target="panel">
+      <h2 class="rpt-panel__title" id="todo-title"><%= pluralize(todo_count, "thing") %> to do first</h2>
+      <p class="rpt-panel__lede">Do these before you pay.</p>
+      <ol class="rpt-steps">
+        <li class="rpt-step">
+          <h3><%= top ? "Have a mechanic check the #{part_name_and_blurb(top).first.downcase}" : "Have a mechanic look it over" %></h3>
+          <p><%= top ? "It's the part most likely to give trouble on this car." : "A check costs a little and can save a lot." %></p>
+          <% if top && (strongest = top[:evidence].max_by { _1[:score].to_f }) %>
+            <%= cite_with_count(evidence_source(strongest), @report) %>
+          <% end %>
+        </li>
+        <% if @report.country == "US" %>
+          <li class="rpt-step">
+            <h3><%= recalls.any? ? "#{pluralize(recalls.size, "safety recall")} for this car: ask if #{recalls.one? ? "it was" : "they were"} fixed" : "No safety recalls for this car" %></h3>
+            <% if recalls.any? %>
+              <p>Recall fixes are free. Ask the seller for the paperwork.</p>
+              <details class="rpt-step__more">
+                <summary>See the recalls</summary>
+                <ul>
+                  <% recalls.first(8).each do |recall| %>
+                    <li><strong><%= recall_part(recall[:component]) %></strong> <%= link_to "NHTSA recall #{recall[:campaign]} ↗", nhtsa_recall_url(recall[:campaign]), class: "cite cite--inline", target: "_blank", rel: "noopener" %><br><span class="muted"><%= truncate(recall[:summary].to_s, length: 220) %></span></li>
+                  <% end %>
+                </ul>
+              </details>
+              <%= cite(:recalls, @report) %>
+            <% else %>
+              <p>Nothing to fix for free right now.</p>
+            <% end %>
+          </li>
+          <% if programs.any? %>
+            <li class="rpt-step">
+              <h3>Ask about <%= pluralize(programs.size, "free repair") %> <%= VehicleName.display_make(@report.make) %> may owe you</h3>
+              <p>Makers quietly pay for some common problems. Give the shop the number.</p>
+              <details class="rpt-step__more">
+                <summary>See what's covered</summary>
+                <ul>
+                  <% programs.first(8).each do |program| %>
+                    <li><strong><%= program[:label] %></strong> <span class="faint">(maker document <%= program[:document] %>)</span><br><span class="muted"><%= truncate(program[:title].to_s, length: 220) %></span></li>
+                  <% end %>
+                </ul>
+              </details>
+              <%= cite(:bulletins, @report) %>
+            </li>
+          <% end %>
+        <% end %>
+        <% if last_test %>
+          <li class="rpt-step">
+            <h3>Last safety inspection: <%= last_test[:result].to_s.downcase.start_with?("pass") ? "passed" : "failed" %></h3>
+            <% if last_test[:defects].any? %>
+              <p>The inspector found problems. If they aren't fixed, ask for a lower price.</p>
+              <details class="rpt-step__more">
+                <summary>See the problems</summary>
+                <ul><% last_test[:defects].each do |defect| %><li><%= defect[:text] %></li><% end %></ul>
+              </details>
+            <% else %>
+              <p>The inspector didn't find any problems.</p>
+            <% end %>
+            <% if rolled_back %>
+              <p class="rpt-step__alert">The miles went down between inspections. Someone may have rolled them back. Ask why.</p>
+            <% end %>
+            <%= cite(@report.country == "NL" ? :rdw : :mot_history) %>
+          </li>
+        <% elsif history && history[:defects].present? %>
+          <li class="rpt-step">
+            <h3>Problems found at recent inspections</h3>
+            <p>If these aren't fixed, ask for a lower price.</p>
+            <details class="rpt-step__more">
+              <summary>See the problems</summary>
+              <ul><% history[:defects].first(10).each do |defect| %><li><%= defect[:text] %></li><% end %></ul>
+            </details>
+            <%= cite(@report.country == "NL" ? :rdw : :mot_history) %>
+          </li>
+        <% end %>
+      </ol>
+      <% Array(@report.live[:notes]).each do |note| %>
+        <p class="rpt-note"><%= note %></p>
+      <% end %>
+      <div class="rpt-next no-print"><button type="button" class="rpt-btn" data-action="chapters#show" aria-controls="<%= r[:visits].present? ? "upkeep" : "details" %>">Next: <%= r[:visits].present? ? "Upkeep" : "Details" %> →</button></div>
+    </section>
+
+    <% if r[:visits].present? %>
+      <%= render "reports/visits", r:, report: @report, market: market %>
+    <% end %>
+
+    <section class="rpt-panel" id="details" role="tabpanel" aria-labelledby="details-title" data-chapters-target="panel">
+      <h2 class="rpt-panel__title" id="details-title">Everything else</h2>
+      <p class="rpt-panel__lede">More facts, if you want them.</p>
+      <div class="rpt-acc">
+        <details class="more">
+          <summary><span>Parts that tend to break</span><span class="more__hint"><%= profile[:weak_spots].any? ? pluralize(profile[:weak_spots].size, "part") : "None found" %></span></summary>
+          <div class="more__body">
+            <%= render "model_profiles/weak_spots", profile:, limit: 3, report: @report %>
+            <% if !@shared && profile[:weak_spots].size > 3 %><p><%= link_to "See all #{profile[:weak_spots].size}", model_profile_path(make: @report.make, model: @report.model, year: @report.model_year), class: "rpt-btn" %></p><% end %>
+          </div>
+        </details>
+
+        <% if owners && owners[:complaints].to_i.positive? %>
+          <details class="more">
+            <summary><span>What other owners say</span><span class="more__hint"><%= number_with_delimiter(owners[:complaints]) %> reports</span></summary>
+            <div class="more__body"><%= render "reports/owner_reports", owners:, report: @report %></div>
+          </details>
+        <% end %>
+
+        <% covered = r[:coverage].select { |line| line[:years_left].to_f.positive? } %>
+        <% unknown = r[:coverage].all? { |line| line[:source] == "none" } %>
+        <details class="more">
+          <summary><span>Warranty</span><span class="more__hint"><%= if unknown then "Not on file" elsif covered.any? then "Some left" else "None left" end %></span></summary>
+          <div class="more__body">
+            <% if unknown %>
+              <p>We don't have <%= VehicleName.display_make(@report.make) %>'s warranty on file, so our repair costs assume you pay for everything. Ask the seller how many years and miles are left.</p>
+            <% else %>
+              <p class="muted">A warranty ends after a set number of years or miles, whichever comes first.</p>
+              <p><%= cite(:warranty) %></p>
+              <ul class="plain-list">
+                <% r[:coverage].each do |line| %>
+                  <% name, = ReportsHelper::COVERAGE_NAMES.fetch(line[:coverage_type], [ line[:label] ]) %>
+                  <li><span><%= name %> <span class="faint">(<%= warranty_term_text(@report, line[:coverage_type]) || "not offered" %>)</span></span><span><%= years_left_text(line[:years_left]) %></span></li>
+                <% end %>
+              </ul>
+            <% end %>
+          </div>
+        </details>
+
+        <details class="more">
+          <summary><span>Every part we checked</span><span class="more__hint"><%= r[:problems].size %> parts</span></summary>
+          <div class="more__body">
+            <div class="table-wrap">
+              <table class="table">
+                <thead><tr><th>Part</th><th>Chance in <%= years %></th><th class="n">Cost to fix</th><th>Warranty</th></tr></thead>
+                <tbody>
+                  <% r[:problems].each do |problem| %>
+                    <tr>
+                      <td><%= part_name_and_blurb(problem).first %></td>
+                      <td><%= cars_like_this(problem[:chance_any_oop]).upcase_first %></td>
+                      <td class="n"><%= about_money(problem[:cost], market) %></td>
+                      <td class="faint"><%= coverage_summary(problem) %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+            <p class="small faint">Chances: <%= r[:data][:model_has_data] ? "UK MOT test records for this model" : "UK MOT test records for all cars" %>. Costs: Curb's repair price estimates.</p>
+          </div>
+        </details>
+
+        <details class="more">
+          <summary><span>Sources</span><span class="more__hint">Where every fact comes from</span></summary>
+          <div class="more__body">
+            <ul class="sources-list">
+              <li>
+                <%= link_to "UK MOT test records (DVSA) ↗", source_url(:mot), target: "_blank", rel: "noopener" %>
+                <span><%= r[:data][:model_has_data] ? "#{number_with_delimiter(r[:data][:model_tests])} safety inspections of cars like this one" : "Safety inspections of all cars; we have none for this model yet" %>. How often parts fail at this age and mileage.<%= " The US doesn't share these records, so we use the UK's for the same model." if r[:data][:proxy] %></span>
+              </li>
+              <% if @report.country == "US" %>
+                <li>
+                  <%= link_to "NHTSA: complaints, recalls and maker bulletins for the #{@report.title} ↗", nhtsa_vehicle_url(@report), target: "_blank", rel: "noopener" %>
+                  <span>What owners reported to the US government, official recalls, and fixes the maker sent to dealers.</span>
+                </li>
+                <% if owners && owners[:overall] %>
+                  <li><span class="sources-list__name">US sales figures from Wikipedia (CC BY-SA)</span><span>Used to compare complaints per car sold.</span></li>
+                <% end %>
+              <% end %>
+              <% if history %>
+                <li>
+                  <%= link_to(@report.country == "NL" ? "RDW, the Dutch vehicle register ↗" : "GOV.UK MOT history ↗", source_url(@report.country == "NL" ? :rdw : :mot_history), target: "_blank", rel: "noopener") %>
+                  <span>This car's own inspection history.</span>
+                </li>
+              <% end %>
+              <% if (guide = r[:schedule_source]) %>
+                <li>
+                  <%= link_to "#{guide[:title]} ↗", guide[:url], target: "_blank", rel: "noopener" %>
+                  <span>How often to do upkeep: <%= guide[:items].map { |name, pages| "#{name.downcase}#{" (p. #{pages.join(", ")})" if pages.any?}" }.to_sentence %>. Read from the maker's guide for this car.</span>
+                </li>
+              <% end %>
+              <li>
+                <span class="sources-list__name">Curb's estimates</span>
+                <span>Repair prices, labor rates, <%= r[:schedule_source] ? "the rest of the upkeep schedule" : "the upkeep schedule" %> and maker warranty terms come from our own starter tables, not a published source. Treat them as rough and confirm prices with a local shop.</span>
+              </li>
+            </ul>
+            <p class="small faint">These are best guesses, not promises. Upkeep assumes the car is up to date on its servicing today.</p>
+          </div>
+        </details>
+      </div>
+
+      <% unless @shared %>
+        <div class="rpt-next rpt-next--start no-print">
+          <%= link_to "Check another car", new_report_path, class: "rpt-btn rpt-btn--solid" %>
+          <%= link_to "All your checks", reports_path, class: "rpt-btn" %>
+        </div>
+      <% end %>
+    </section>
+  </div>
+</main>

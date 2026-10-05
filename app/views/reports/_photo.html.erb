@@ -1,0 +1,19 @@
+<%# A Commons photo of the same model and year, credited as its license asks, filling the report's photo
+    panel with the model's name over it. It's a car like this one, not the car on the lot, and the caption
+    says so. locals: photo, name (optional) %>
+<%= turbo_frame_tag "report_photo", class: "rpt-photo" do %>
+  <% if photo %>
+    <figure class="car-photo rpt-photo__figure">
+      <img src="<%= photo[:url] %>" alt="<%= photo[:title] %>" decoding="async">
+      <% if local_assigns[:name].present? %><span class="rpt-photo__name" aria-hidden="true"><%= name %></span><% end %>
+      <figcaption>
+        A car like this one, not the one you're looking at. Photo:
+        <%= link_to (photo[:artist] || "Wikimedia Commons"), photo[:page], target: "_blank", rel: "noopener" %>,
+        <%= photo[:license_url].present? ? link_to(photo[:license], photo[:license_url], target: "_blank", rel: "noopener") : photo[:license] %>,
+        via Wikimedia Commons
+      </figcaption>
+    </figure>
+  <% else %>
+    <div class="rpt-photo__none" aria-hidden="true"><span><%= local_assigns[:name] %></span></div>
+  <% end %>
+<% end %>

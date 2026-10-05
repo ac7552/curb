@@ -1,0 +1,49 @@
+<%# Known weak spots for a model (ModelProfile#to_h). Each card shows the strongest sign from each kind
+    of record, plus what a fix costs when a report is given. %>
+<% report = local_assigns[:report] %>
+<% spots = profile[:weak_spots].first(local_assigns.fetch(:limit, 20)) %>
+<% if spots.empty? %>
+  <%# Two different answers: we looked and found nothing, or we don't have enough to look. %>
+  <% if profile.dig(:uk, :tests).to_i >= ModelProfile::MIN_TESTS %>
+    <div class="callout callout--good">
+      <%= render "shared/status_icon", kind: :good, css: "callout__icon" %>
+      <div>
+        <p class="callout__title">No problem parts found</p>
+        <p>No part on this car breaks a lot more than on other cars.</p>
+      </div>
+    </div>
+  <% else %>
+    <div class="callout callout--info">
+      <%= render "shared/status_icon", kind: :info, css: "callout__icon" %>
+      <div>
+        <p class="callout__title">Not enough records to tell</p>
+        <p>We don't have enough reports on this car to spot problem parts. Have a mechanic look it over before you buy.</p>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <div class="watch-list">
+    <% spots.each do |spot| %>
+      <% part, blurb = part_name_and_blurb(spot) %>
+      <% signs = spot[:evidence].group_by { |item| item[:source] }.map { |_, items| items.max_by { |item| [ item[:score], item[:count].to_i ] } } %>
+      <article class="card watch">
+        <div class="row row--between" style="align-items: start">
+          <div>
+            <p class="h3"><%= part %></p>
+            <% if blurb %><p class="small muted"><%= blurb %></p><% end %>
+          </div>
+          <span class="tag <%= weak_spot_label(spot) == "Common problem" ? "tag--likely" : "tag--could-happen" %>"><%= weak_spot_label(spot) %></span>
+        </div>
+        <ul class="evidence">
+          <% signs.each do |item| %>
+            <li><%= weak_spot_sentence(item, part.downcase, profile[:make]) %>
+              <%= cite(evidence_source(item), report) %></li>
+          <% end %>
+        </ul>
+        <% if report && (cost = weak_spot_cost(report, spot[:slug])) %>
+          <p class="muted">A fix costs about <strong><%= about_money(cost, report.market) %></strong>.</p>
+        <% end %>
+      </article>
+    <% end %>
+  </div>
+<% end %>

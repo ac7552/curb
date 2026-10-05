@@ -1,0 +1,113 @@
+<% content_for :title, "Your checks" %>
+<main class="page page--checks">
+  <div class="section__head">
+    <div class="stack" style="--stack: 10px">
+      <p class="eyebrow"><%= pluralize(@total, "car") %> checked</p>
+      <h1 class="display display--md">Your checks</h1>
+    </div>
+    <%= link_to "New check", new_report_path, class: "btn btn--dark" %>
+  </div>
+
+  <% if @reports.empty? %>
+    <div class="card card--soft empty">
+      <p class="h2">No cars checked yet</p>
+      <p class="muted" style="margin-top: 8px">Look up a car to see what it will really cost you.</p>
+      <div class="row"><%= link_to "Check a car", new_report_path, class: "btn btn--dark" %></div>
+    </div>
+  <% else %>
+    <%# The checks sit around the inside of a wheel you spin, the front one in focus. Without
+        JavaScript, or in grid view, the same cards lay out as a plain grid. %>
+    <div class="wheel" data-controller="check-wheel">
+      <div class="wheel__bar">
+        <div class="chips chips--sm" role="group" aria-label="Show">
+          <% [ [ "all", "All", nil ], [ "good", "Good", "var(--good)" ], [ "warning", "OK", "var(--warning)" ], [ "critical", "Costly or risky", "var(--accent)" ] ].each do |kind, label, color| %>
+            <button type="button" class="chip chip--link <%= "is-on" if kind == "all" %>" data-kind="<%= kind %>" data-action="check-wheel#filter" aria-pressed="<%= kind == "all" %>">
+              <% if color %><span class="dot" style="--dot: <%= color %>"></span><% end %><%= label %>
+            </button>
+          <% end %>
+        </div>
+        <div class="wheel__bar-end">
+          <% if @total > 1 %>
+            <div class="chips chips--sm" aria-label="Sort">
+              <%= link_to "Newest", reports_path(sort: "recent"), class: "chip chip--link #{"is-on" if @sort == "recent"}" %>
+              <%= link_to "Costs the most", reports_path(sort: "cost"), class: "chip chip--link #{"is-on" if @sort == "cost"}" %>
+            </div>
+          <% end %>
+          <div class="seg" role="group" aria-label="View">
+            <button type="button" class="seg__item" data-view="wheel" data-action="check-wheel#setView" data-check-wheel-target="viewButton">Wheel</button>
+            <button type="button" class="seg__item" data-view="grid" data-action="check-wheel#setView" data-check-wheel-target="viewButton">Grid</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wheel__stage" data-check-wheel-target="stage"
+           data-action="pointerdown->check-wheel#dragStart pointermove->check-wheel#dragMove pointerup->check-wheel#dragEnd pointercancel->check-wheel#dragEnd wheel->check-wheel#scroll:!passive click->check-wheel#cardClicked">
+        <ul class="wheel__ring" data-check-wheel-target="ring">
+          <% @reports.each do |report| %>
+            <% market = report.market %>
+            <% verdict = report.calculated? ? report_verdict(report) : nil %>
+            <% kind = verdict ? verdict[:kind] : :pending %>
+            <% cost = report.result.dig(:summary, :true_cost).to_f if verdict %>
+            <% total = money(bill_total(report.result[:summary]), market) if verdict %>
+            <li class="check-card check-card--<%= kind %>" data-check-wheel-target="card" data-kind="<%= kind %>"
+                data-label="<%= verdict ? verdict[:label] : "Not checked yet" %>"
+                data-cost="<%= verdict ? "#{total} to own" : "No figure yet" %>"
+                data-date="<%= report.created_at.to_date.to_fs(:long) %>">
+              <%= link_to report_path(report), class: "check-card__link", draggable: false do %>
+                <%= render "reports/card_photo", report: %>
+                <span class="check-card__top">
+                  <span class="check-card__verdict">
+                    <% if verdict %><%= render "shared/status_icon", kind: verdict[:kind] %><%= verdict[:label] %><% else %>Not checked yet<% end %>
+                  </span>
+                  <span class="check-card__date"><%= report.created_at.to_date.to_fs(:long) %></span>
+                </span>
+                <span class="check-card__brand">
+                  <%= make_logo(report.make) %>
+                  <span class="check-card__car"><%= report.title %></span>
+                </span>
+                <span class="odo" aria-label="<%= distance(report.current_mileage, market) %> on the clock">
+                  <span class="odo__digits"><%= number_with_delimiter(Market.from_miles(report.current_mileage, report.country)) %></span>
+                  <span class="odo__unit"><%= market.distance_unit %></span>
+                </span>
+                <% if verdict %>
+                  <span class="check-card__cost"><%= total %></span>
+                  <span class="check-card__term">to own for <%= pluralize(report.ownership_years, "year") %></span>
+                  <%# Drawn against the priciest car this person has checked, so cheap and pricey show at a glance. %>
+                  <span class="check-card__bar" aria-hidden="true"><span style="--fill: <%= @max_cost.positive? ? ((cost / @max_cost) * 100).round : 0 %>%"></span></span>
+                  <span class="check-card__bar-key" aria-hidden="true">Compared with your other cars</span>
+                <% else %>
+                  <span class="check-card__cost check-card__cost--pending">&mdash;</span>
+                  <span class="check-card__term">No figure yet</span>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+        <p class="wheel__nudge" data-check-wheel-target="nudge" hidden>← Drag to spin →</p>
+      </div>
+
+      <div class="wheel__nav" data-check-wheel-target="nav" hidden>
+        <p class="wheel__now" data-check-wheel-target="now" aria-live="polite"></p>
+        <div class="dock">
+          <button type="button" class="dock__step" data-action="check-wheel#previous" data-check-wheel-target="previous" aria-label="Previous check">‹</button>
+          <div class="dock__window"><div class="dock__dots" data-check-wheel-target="dots" role="tablist" aria-label="Checks"></div></div>
+          <button type="button" class="dock__step" data-action="check-wheel#next" data-check-wheel-target="next" aria-label="Next check">›</button>
+          <span class="dock__count" data-check-wheel-target="count"></span>
+        </div>
+      </div>
+      <p class="wheel__empty muted" data-check-wheel-target="empty" hidden>No checks like that on this page.</p>
+    </div>
+
+    <% if @pages > 1 %>
+      <nav class="pager" aria-label="Pages">
+        <%= link_to "← Newer", reports_path(page: @page - 1, sort: @sort),
+              class: "btn btn--ghost btn--sm #{"is-off" if @page == 1}",
+              aria: { disabled: @page == 1 } %>
+        <span class="pager__count">Page <%= @page %> of <%= @pages %></span>
+        <%= link_to "Older →", reports_path(page: @page + 1, sort: @sort),
+              class: "btn btn--ghost btn--sm #{"is-off" if @page == @pages}",
+              aria: { disabled: @page == @pages } %>
+      </nav>
+    <% end %>
+  <% end %>
+</main>

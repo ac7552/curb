@@ -1,0 +1,27 @@
+# Wikipedia pages to read US sales from when searching for "Make Model" finds the wrong page, or the
+# page is named differently from the model. Several pages are tried in order.
+CHRYSLER:
+  PACIFICA: ["Chrysler Pacifica (minivan)"]
+  TOWN & COUNTRY: ["Chrysler Town & Country (minivan)"]
+HONDA:
+  ODYSSEY: ["Honda Odyssey (North America)"]
+  CR-V: ["Honda CR-V (fifth generation)", "Honda CR-V (fourth generation)"]
+  CIVIC: ["Honda Civic (tenth generation)", "Honda Civic (ninth generation)"]
+FORD:
+  F-150: ["Ford F-Series"]
+  MUSTANG: ["Ford Mustang"]
+  TRANSIT: ["Ford Transit"]
+  FUSION: ["Ford Fusion (Americas)"]
+RAM:
+  "1500": ["Ram pickup"]
+DODGE:
+  RAM: ["Ram pickup"]
+  GRAND CARAVAN: ["Dodge Caravan"]
+JEEP:
+  CHEROKEE: ["Jeep Cherokee (KL)"]
+NISSAN:
+  FRONTIER: ["Nissan Frontier", "Nissan Navara"]
+HYUNDAI:
+  GENESIS: ["Hyundai Genesis"]
+KIA:
+  OPTIMA: ["Kia Optima"]

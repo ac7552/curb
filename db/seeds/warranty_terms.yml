@@ -1,0 +1,36 @@
+# Factory warranty terms by make: years, miles (blank = unlimited), and whether they pass to a second owner.
+# Hand-built starter table; check each make's current terms on the manufacturer's site before launch.
+US:
+  HONDA:      { bumper_to_bumper: [3, 36000], powertrain: [5, 60000], corrosion: [5, null], emissions: [8, 80000] }
+  TOYOTA:     { bumper_to_bumper: [3, 36000], powertrain: [5, 60000], corrosion: [5, null], emissions: [8, 80000] }
+  FORD:       { bumper_to_bumper: [3, 36000], powertrain: [5, 60000], corrosion: [5, null], emissions: [8, 80000] }
+  VOLKSWAGEN: { bumper_to_bumper: [4, 50000], powertrain: [4, 50000], corrosion: [7, 100000], emissions: [8, 80000] }
+  NISSAN:     { bumper_to_bumper: [3, 36000], powertrain: [5, 60000], corrosion: [5, null], emissions: [8, 80000] }
+  BMW:        { bumper_to_bumper: [4, 50000], powertrain: [4, 50000], corrosion: [12, null], emissions: [8, 80000] }
+  # Hyundai and Kia: 10yr/100k powertrain for the first owner only; later owners get 5yr/60k.
+  HYUNDAI:    { bumper_to_bumper: [5, 60000], powertrain: [5, 60000], corrosion: [7, null], emissions: [8, 80000] }
+  KIA:        { bumper_to_bumper: [5, 60000], powertrain: [5, 60000], corrosion: [5, 100000], emissions: [8, 80000] }
+  SKODA:      { bumper_to_bumper: [3, 36000], powertrain: [5, 60000], corrosion: [12, null], emissions: [8, 80000] }
+  VAUXHALL:   { bumper_to_bumper: [3, 36000], powertrain: [5, 60000], corrosion: [6, null], emissions: [8, 80000] }
+GB:
+  HONDA:      { bumper_to_bumper: [3, 90000], powertrain: [3, 90000], corrosion: [10, null] }
+  TOYOTA:     { bumper_to_bumper: [3, 60000], powertrain: [3, 60000], corrosion: [12, null] }
+  FORD:       { bumper_to_bumper: [3, 60000], powertrain: [3, 60000], corrosion: [12, null] }
+  VOLKSWAGEN: { bumper_to_bumper: [3, 60000], powertrain: [3, 60000], corrosion: [12, null] }
+  NISSAN:     { bumper_to_bumper: [3, 60000], powertrain: [3, 60000], corrosion: [12, null] }
+  BMW:        { bumper_to_bumper: [3, null], powertrain: [3, null], corrosion: [12, null] }
+  HYUNDAI:    { bumper_to_bumper: [5, null], powertrain: [5, null], corrosion: [12, null] }
+  KIA:        { bumper_to_bumper: [7, 100000], powertrain: [7, 100000], corrosion: [12, null] }
+  SKODA:      { bumper_to_bumper: [3, 60000], powertrain: [3, 60000], corrosion: [12, null] }
+  VAUXHALL:   { bumper_to_bumper: [3, 60000], powertrain: [3, 60000], corrosion: [12, null] }
+NL:
+  HONDA:      { bumper_to_bumper: [3, 62000], powertrain: [3, 62000], corrosion: [10, null] }
+  TOYOTA:     { bumper_to_bumper: [3, 62000], powertrain: [3, 62000], corrosion: [12, null] }
+  FORD:       { bumper_to_bumper: [2, null], powertrain: [2, null], corrosion: [12, null] }
+  VOLKSWAGEN: { bumper_to_bumper: [2, null], powertrain: [2, null], corrosion: [12, null] }
+  NISSAN:     { bumper_to_bumper: [3, 62000], powertrain: [3, 62000], corrosion: [12, null] }
+  BMW:        { bumper_to_bumper: [2, null], powertrain: [2, null], corrosion: [12, null] }
+  HYUNDAI:    { bumper_to_bumper: [5, null], powertrain: [5, null], corrosion: [12, null] }
+  KIA:        { bumper_to_bumper: [7, 93000], powertrain: [7, 93000], corrosion: [12, null] }
+  SKODA:      { bumper_to_bumper: [2, null], powertrain: [2, null], corrosion: [12, null] }
+  VAUXHALL:   { bumper_to_bumper: [2, null], powertrain: [2, null], corrosion: [12, null] }

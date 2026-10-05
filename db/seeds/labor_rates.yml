@@ -1,0 +1,14 @@
+# Hourly shop labor rates in local currency. Starter estimates; refine per region before launch.
+US:
+  National average: { independent: 130, dealer: 175 }
+  Northeast:        { independent: 150, dealer: 195 }
+  Midwest:          { independent: 120, dealer: 160 }
+  South:            { independent: 115, dealer: 155 }
+  West:             { independent: 150, dealer: 200 }
+GB:
+  London:           { independent: 110, dealer: 165 }
+  South East:       { independent: 90, dealer: 140 }
+  Rest of UK:       { independent: 75, dealer: 120 }
+NL:
+  Randstad:         { independent: 90, dealer: 125 }
+  Rest of Netherlands: { independent: 75, dealer: 105 }

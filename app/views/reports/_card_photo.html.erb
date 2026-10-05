@@ -1,0 +1,17 @@
+<%# The top of a check card: the car's photo, credited as its license asks, or its badge when there's
+    no photo. A check made before photos existed loads its photo the first time it's shown. %>
+<% if report.live.key?(:photo) || local_assigns.key?(:photo) %>
+  <% photo = local_assigns.fetch(:photo) { report.live[:photo] } %>
+  <%= turbo_frame_tag dom_id(report, :photo), class: "check-card__photo" do %>
+    <% if photo %>
+      <img src="<%= photo[:url] %>" alt="" loading="lazy" decoding="async" draggable="false">
+      <span class="check-card__credit">Photo: <%= photo[:artist] || "Wikimedia Commons" %>, <%= photo[:license] %></span>
+    <% else %>
+      <span class="check-card__no-photo"><%= make_logo(report.make) %></span>
+    <% end %>
+  <% end %>
+<% else %>
+  <%= turbo_frame_tag dom_id(report, :photo), class: "check-card__photo", src: photo_report_path(report, card: 1), loading: :lazy do %>
+    <span class="check-card__no-photo"><%= make_logo(report.make) %></span>
+  <% end %>
+<% end %>

@@ -1,0 +1,32 @@
+# Keep the build small and secret-free: only what the app needs to run goes into the image.
+/.git/
+/.gitignore
+/.github/
+/.claude/
+/.ruby-lsp/
+/.bundle
+/.env*
+/config/master.key
+/config/credentials/*.key
+
+# DVSA and NHTSA downloads (many GB); the server gets the built tables from a database copy instead.
+/MOT Testing data*/
+/MOT testing data*/
+/NHTSA data/
+/data/
+
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+/tmp/pids/*
+!/tmp/pids/.keep
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
+/public/assets
+/test/
+/docs/
+/Dockerfile*
+/.dockerignore

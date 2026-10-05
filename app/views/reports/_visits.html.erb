@@ -1,0 +1,61 @@
+<%# Upkeep as shop visits, one row each, with the biggest called out. Job names only; their prices are in
+    "How often each job is done", so each visit shows one number. locals: r (results), report, market %>
+<% visits = r[:visits] %>
+<% guide = r[:schedule_source] %>
+<% start = (report.calculated_at || report.created_at).to_date %>
+<% upkeep = about_amount(r[:summary][:maintenance]) %>
+<% totals = split_to_total(visits.map { _1[:total] }, upkeep) %>
+<% biggest = totals.index(totals.max) %>
+<% big_date = (start + visits[biggest][:months].months).strftime("%B %Y") %>
+<section class="rpt-panel" id="upkeep" role="tabpanel" aria-labelledby="upkeep-title" data-chapters-target="panel">
+  <h2 class="rpt-panel__title" id="upkeep-title"><%= pluralize(visits.size, "shop visit") %> in <%= pluralize(report.ownership_years, "year") %></h2>
+  <p class="rpt-panel__lede">
+    About <strong><%= money(upkeep, market) %></strong> in all.
+    <% if visits.size > 1 && totals.max > upkeep * 0.4 %>Most visits are small. Save up for <strong><%= big_date %></strong>. That one costs about <strong><%= money(totals.max, market) %></strong>.<% end %>
+  </p>
+
+  <ol class="visits">
+    <% visits.each_with_index do |visit, i| %>
+      <% big = i == biggest && visits.size > 1 %>
+      <li class="visit<%= " visit--big" if big %>">
+        <div class="visit__when">
+          <% if big %><span class="rpt-label visit__badge">Biggest visit</span><% end %>
+          <span class="visit__date"><%= (start + visit[:months].months).strftime("%B %Y") %></span>
+          <span class="visit__miles">at <%= distance(visit[:miles], market).sub(/\bmi\z/, "miles") %></span>
+        </div>
+        <ul class="visit__jobs">
+          <% visit[:jobs].each do |job| %>
+            <li class="job-chip" title="<%= job[:guide_pages] ? "#{report.make}'s guide, page #{job[:guide_pages].join(", ")}" : "Our typical timing" %>">
+              <% if job[:guide_pages] %><span class="job-chip__guide" aria-label="From <%= report.make %>'s guide"></span><% end %><%= short_job_name(job[:name]) %>
+            </li>
+          <% end %>
+        </ul>
+        <span class="visit__total"><%= money(totals[i], market) %></span>
+      </li>
+    <% end %>
+  </ol>
+
+  <p class="rpt-note">
+    <% if guide %>
+      <span class="job-chip__guide"></span> <%= report.make %>'s guide says when to do these. Source: <%= link_to "#{guide[:title]} ↗", guide[:url], target: "_blank", rel: "noopener" %>
+    <% else %>
+      We don't have <%= report.make %>'s schedule for this car yet, so these are typical times for most cars.
+    <% end %>
+  </p>
+
+  <% if r[:schedule].present? %>
+    <details class="rpt-how">
+      <summary>How often each job is done, and its price</summary>
+      <ul class="how-list">
+        <% r[:schedule].each do |row| %>
+          <li>
+            <span><strong><%= row[:name] %></strong><br><%= service_interval(row, market) %><br><span class="small faint"><%= service_source(row, report, market) %></span></span>
+            <span class="how-list__cost"><%= money(row[:cost], market) %></span>
+          </li>
+        <% end %>
+      </ul>
+    </details>
+  <% end %>
+  <p class="rpt-note"><%= cite(:estimates, label: "Curb's price estimates") %></p>
+  <div class="rpt-next no-print"><button type="button" class="rpt-btn" data-action="chapters#show" aria-controls="details">Next: Details →</button></div>
+</section>

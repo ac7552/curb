@@ -1,0 +1,48 @@
+<% content_for :title, "Plans" %>
+<main class="page plans">
+  <section class="hero">
+    <p class="eyebrow">Plans</p>
+    <h1 class="display display--md">Check every car on the lot</h1>
+    <p class="lede">Free covers a few cars a month. Plus is for when you're really shopping.</p>
+  </section>
+
+  <section class="section plans__grid">
+    <% @plans.each do |plan| %>
+      <article class="plan <%= "plan--paid" if plan.paid? %>">
+        <p class="about__label"><%= plan.name %></p>
+        <p class="plan__price">
+          <% if plan.paid? %>
+            <%= plan_price(plan, "month") %><span class="plan__per"> a month</span>
+          <% else %>
+            $0
+          <% end %>
+        </p>
+        <p class="small faint"><%= plan.paid? ? "or #{plan_price(plan, "year")} a year (#{yearly_saving(plan)} off)" : "No card needed" %></p>
+
+        <ul class="about__list plan__features">
+          <li><strong><%= plan.unlimited?(:check) ? "Unlimited" : plan.limit(:check) %></strong> car checks a month</li>
+          <li>Every report: repair odds, upkeep, warranty, and the true cost to own</li>
+          <li>Save your checks and share them with anyone</li>
+        </ul>
+
+        <% if plan.paid? %>
+          <% if authenticated? && Current.user.plan == plan.key %>
+            <p class="plan__current">Your plan</p>
+          <% elsif authenticated? %>
+            <div class="plan__buttons">
+              <%= button_to "#{plan_price(plan, "month")} a month", subscription_path(plan: plan.key, interval: "month"), class: "btn btn--dark", form: { data: { turbo: false } } %>
+              <%= button_to "#{plan_price(plan, "year")} a year", subscription_path(plan: plan.key, interval: "year"), class: "btn btn--ghost", form: { data: { turbo: false } } %>
+            </div>
+            <p class="small faint">Cancel anytime. Payments are handled by Stripe.</p>
+          <% else %>
+            <%= link_to "Create an account", new_registration_path, class: "btn btn--dark" %>
+          <% end %>
+        <% elsif authenticated? && Current.user.plan == plan.key %>
+          <p class="plan__current">Your plan · <%= plan_usage_line(Current.user) %></p>
+        <% elsif !authenticated? %>
+          <%= link_to "Start free", new_registration_path, class: "btn btn--ghost" %>
+        <% end %>
+      </article>
+    <% end %>
+  </section>
+</main>

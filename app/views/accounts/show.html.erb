@@ -1,0 +1,72 @@
+<% content_for :title, "Your account" %>
+<main class="page page--form account">
+  <p class="eyebrow"><%= @user.email_address %></p>
+  <h1 class="display display--md">Your account</h1>
+
+  <section class="section account__plan" aria-labelledby="plan-heading">
+    <h2 class="eyebrow about__head" id="plan-heading">Plan</h2>
+    <div class="account__plan-row">
+      <div>
+        <p class="h2"><%= @user.plan_details.name %></p>
+        <p class="muted"><%= plan_usage_line(@user) %></p>
+        <% if @user.paid? && @user.plan_renews_at %>
+          <p class="small faint">Renews <%= l(@user.plan_renews_at.to_date, format: :long) %><%= " · payment problem, Stripe will retry" if @user.subscription_status == "past_due" %></p>
+        <% end %>
+      </div>
+      <% if @user.paid? || @user.stripe_customer_id %>
+        <%= button_to "Manage billing", manage_subscription_path, class: "btn btn--ghost", form: { data: { turbo: false } } %>
+      <% end %>
+      <% unless @user.paid? %>
+        <%= link_to "See Plus", plans_path, class: "btn btn--dark" %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="details-heading">
+    <h2 class="eyebrow about__head" id="details-heading">Your details</h2>
+    <%= form_with model: @user, url: account_path, method: :patch, class: "form" do |form| %>
+      <%= render "shared/errors", record: @user %>
+      <div class="fields">
+        <div class="field">
+          <%= form.label :first_name %>
+          <%= form.text_field :first_name, required: true, autocomplete: "given-name", maxlength: 60, class: "input" %>
+        </div>
+        <div class="field">
+          <%= form.label :last_name %>
+          <%= form.text_field :last_name, required: true, autocomplete: "family-name", maxlength: 60, class: "input" %>
+        </div>
+      </div>
+
+      <div class="fields">
+        <div class="field">
+          <%= form.label :country, "Country (optional)" %>
+          <%= form.select :country, ReportsHelper::COUNTRY_LABELS.invert, { include_blank: "Not set" }, class: "input" %>
+        </div>
+        <div class="field">
+          <%= form.label :postal_code, "ZIP or postcode (optional)" %>
+          <%= form.text_field :postal_code, autocomplete: "postal-code", maxlength: 12, class: "input" %>
+          <span class="field__hint">Sets shop prices for where you live.<%= " Now: #{@user.region}." if @user.region %></span>
+        </div>
+      </div>
+
+      <fieldset class="fieldset">
+        <legend class="field__label">Cars you like (optional)</legend>
+        <%= form.hidden_field :car_types, multiple: true, value: "" %>
+        <div class="chips">
+          <% User::CAR_TYPES.each do |type| %>
+            <label class="chip">
+              <%= check_box_tag "user[car_types][]", type, @user.car_types.include?(type), id: "car_type_#{type}" %>
+              <%= car_type_label(type) %>
+            </label>
+          <% end %>
+        </div>
+      </fieldset>
+
+      <div><%= form.submit "Save", class: "btn btn--dark" %></div>
+    <% end %>
+  </section>
+
+  <section class="section">
+    <%= button_to "Sign out", session_path, method: :delete, class: "link-btn" %>
+  </section>
+</main>

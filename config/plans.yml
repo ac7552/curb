@@ -1,0 +1,19 @@
+# What each plan costs and allows. Limits are per calendar month; null means no limit, 0 means not included.
+# Prices are in US cents and must match the prices set up in Stripe (Stripe's price IDs live in credentials:
+# stripe.prices.plus_month and stripe.prices.plus_year).
+free:
+  name: Free
+  limits:
+    check: 3
+    deep_check: 0
+    question: 0
+
+plus:
+  name: Plus
+  prices:
+    month: 199
+    year: 1999
+  limits:
+    check: null
+    deep_check: 10
+    question: 30

@@ -1,0 +1,95 @@
+# Component categories for defects. warranty_type says which warranty pays for a repair;
+# labor_hours and parts_cost_usd price a typical repair. Wear items are priced as maintenance instead.
+# Costs are starter estimates: replace them with CarMD / HaynesPro figures when those are licensed.
+- { slug: brake-hydraulics, name: "Brake system", blurb: "The lines and clamps that squeeze the brakes", warranty_type: bumper_to_bumper, labor_hours: 2.0, parts_cost_usd: 220,
+    description: "Brake pipes, hoses, calipers, master cylinder, brake fluid leaks, brake imbalance",
+    keywords: [brake valve, brake calliper, calliper, brake pedal, hydraulic brake, brake cylinder, service brake control, brake pipe, brake hose, brake caliper, caliper, master cylinder, brake fluid, service brakes, brake performance, braking effort, brakes imbalanced, remmen] }
+- { slug: brake-wear, name: "Brake pads", blurb: "Wear down with use and get replaced", warranty_type: none, wear_item: true, labor_hours: 2.0, parts_cost_usd: 220,
+    description: "Worn brake pads, discs, drums and shoes",
+    keywords: [brake pad, brake disc, brake lining, brake drum, remschijf, remblokken] }
+- { slug: parking-brake, name: "Parking brake", blurb: "Holds the car still when it's parked", warranty_type: bumper_to_bumper, labor_hours: 1.5, parts_cost_usd: 150,
+    description: "Parking brake / handbrake cables, levers and electronic parking brakes",
+    keywords: [parking brake, handbrake, parkeerrem, handrem] }
+- { slug: abs, name: "Anti-skid brakes (ABS)", blurb: "Keeps the wheels from locking when you brake hard", warranty_type: bumper_to_bumper, labor_hours: 1.5, parts_cost_usd: 450,
+    description: "ABS sensors, ABS pump, electronic stability control warning",
+    keywords: [abs, anti-lock, electronic stability, esc] }
+- { slug: suspension, name: "Suspension", blurb: "Parts that hold the wheels and soak up bumps", warranty_type: bumper_to_bumper, labor_hours: 2.5, parts_cost_usd: 260,
+    description: "Suspension arms, bushes, ball joints, anti-roll bar links, subframe mountings",
+    keywords: [suspension arm, suspension, bush, ball joint, anti-roll bar, wishbone, stabilizer, draagarm, fusee] }
+- { slug: shock-absorbers, name: "Shocks", blurb: "Keep the car from bouncing after a bump", warranty_type: bumper_to_bumper, labor_hours: 2.0, parts_cost_usd: 300,
+    description: "Leaking or ineffective shock absorbers and struts",
+    keywords: [shock absorber, damper, strut, schokdemper] }
+- { slug: springs, name: "Springs", blurb: "Hold the car up over each wheel", warranty_type: bumper_to_bumper, labor_hours: 2.0, parts_cost_usd: 180,
+    description: "Fractured, corroded or displaced road springs",
+    keywords: [coil spring, road spring, spring, veer] }
+- { slug: steering, name: "Steering", blurb: "Parts that turn the wheels when you turn the wheel", warranty_type: bumper_to_bumper, labor_hours: 2.5, parts_cost_usd: 400,
+    description: "Steering rack, track rod ends, power steering, steering column",
+    keywords: [steering, track rod end, track rod, stuurhuis, spoorstang, stuurinrichting] }
+- { slug: wheel-bearings, name: "Wheel bearings", blurb: "Let the wheels spin smoothly and quietly", warranty_type: bumper_to_bumper, labor_hours: 1.5, parts_cost_usd: 160,
+    description: "Wheel bearings with excessive play or roughness, hubs",
+    keywords: [wheel bearing, hub, wiellager] }
+- { slug: tyres, name: "Tires", blurb: "Wear down with use and get replaced", warranty_type: none, wear_item: true, labor_hours: 1.0, parts_cost_usd: 650,
+    description: "Tread depth, cuts, bulges, tire condition",
+    keywords: [tyre, tire, tread, band, banden, profiel] }
+- { slug: drive-shafts, name: "Axles", blurb: "Carry power from the engine to the wheels", warranty_type: powertrain, labor_hours: 2.0, parts_cost_usd: 250,
+    description: "Driveshafts, CV joints and their boots/gaiters, propshafts",
+    keywords: [universal joint, drive shaft, driveshaft, constant velocity, cv joint, cv boot, prop shaft, aandrijfas] }
+- { slug: engine, name: "Engine", blurb: "The engine itself, its belts and mounts", warranty_type: powertrain, labor_hours: 8.0, parts_cost_usd: 1600,
+    description: "Engine internals, oil leaks, engine mountings, timing chain or belt",
+    keywords: [engine, engine mounting, cylinder head, head gasket, timing, motor] }
+- { slug: oil-leaks, name: "Oil leaks", blurb: "Oil or other fluid dripping from the engine, usually a worn seal", warranty_type: powertrain, labor_hours: 2.5, parts_cost_usd: 80,
+    description: "Engine oil leaks and other fluid leaks, usually a gasket or seal",
+    keywords: [oil leak, engine oil leak, other leaks, olielekkage] }
+- { slug: transmission, name: "Transmission and clutch", blurb: "Change gears so the car can speed up", warranty_type: powertrain, labor_hours: 6.0, parts_cost_usd: 1500,
+    description: "Gearbox, automatic transmission, clutch, differential",
+    keywords: [power train, gearbox, transmission, clutch, differential, versnellingsbak, koppeling] }
+- { slug: exhaust, name: "Exhaust pipe and muffler", blurb: "Carry fumes out the back and keep the car quiet", warranty_type: bumper_to_bumper, labor_hours: 1.5, parts_cost_usd: 300,
+    description: "Exhaust leaks, mountings, silencers",
+    keywords: [noise suppression, exhaust, silencer, muffler, uitlaat] }
+- { slug: emissions, name: "Pollution control parts", blurb: "The catalytic converter and sensors that clean the exhaust", warranty_type: emissions, labor_hours: 2.0, parts_cost_usd: 1100,
+    description: "Emissions test failures, catalytic converter, oxygen sensors, diesel particulate filter, smoke",
+    keywords: [emissions, emission, catalytic, catalyst, lambda, oxygen sensor, particulate, dpf, smoke, roetfilter, emissie] }
+- { slug: fuel-system, name: "Fuel system", blurb: "The gas tank, fuel pump and fuel lines", warranty_type: bumper_to_bumper, labor_hours: 2.0, parts_cost_usd: 350,
+    description: "Fuel leaks, fuel pipes, tank, pump and injectors",
+    keywords: [fuel leak, fuel pipe, fuel tank, fuel pump, fuel injector, fuel cap, fuel, brandstof] }
+- { slug: cooling, name: "Cooling system", blurb: "The radiator and pump that keep the engine from overheating", warranty_type: powertrain, labor_hours: 2.5, parts_cost_usd: 450,
+    description: "Radiator, water pump, coolant leaks, thermostat",
+    keywords: [radiator, coolant, water pump, thermostat, koelsysteem] }
+- { slug: electrical, name: "Battery and wiring", blurb: "The battery, wires, and the parts that charge and start the car", warranty_type: bumper_to_bumper, labor_hours: 1.5, parts_cost_usd: 250,
+    description: "Wiring, battery security, alternator, starter motor, electrical connections",
+    keywords: [battery, wiring, electrical, alternator, starter motor, accu, bedrading] }
+- { slug: lights, name: "Lights", blurb: "Headlights, brake lights and turn signals", warranty_type: bumper_to_bumper, labor_hours: 0.5, parts_cost_usd: 90,
+    description: "Headlamps, aim, bulbs, indicators, brake lights, reflectors",
+    keywords: [registration plate lamp, number plate lamp, headlamp, headlight, lamp, light, indicator, reflector, verlichting, koplamp] }
+- { slug: warning-lights, name: "Dashboard warning lights", blurb: "The check-engine light and gauges", warranty_type: bumper_to_bumper, labor_hours: 1.0, parts_cost_usd: 200,
+    description: "Engine malfunction indicator, airbag or other warning lamps, speedometer, odometer",
+    keywords: [malfunction indicator, warning lamp, warning light, speedometer, odometer, dashboard, storingslampje] }
+- { slug: body-corrosion, name: "Rust", blurb: "Rust that eats into the frame or floor", warranty_type: corrosion, labor_hours: 6.0, parts_cost_usd: 500,
+    description: "Rust and corrosion on the structure, sills, floor, subframe",
+    keywords: [load bearing structure, load-bearing structural, structural member, prescribed area, corroded, corrosion, rust, sill, sub-frame, subframe, roest, carrosserie] }
+- { slug: body, name: "Doors and bumpers", blurb: "Doors, latches, the hood and bumpers", warranty_type: bumper_to_bumper, labor_hours: 2.0, parts_cost_usd: 300,
+    description: "Doors, hinges, catches, bumpers, bonnet, sharp edges, body panels",
+    keywords: [door, bumper, bonnet, boot lid, tailgate, body panel, sharp edge, portier] }
+- { slug: glass-mirrors, name: "Windshield and mirrors", blurb: "Cracks in the glass and broken mirrors", warranty_type: none, labor_hours: 1.0, parts_cost_usd: 300,
+    description: "Windscreen damage in the driver's view, mirrors",
+    keywords: [windscreen, windshield, mirror, glass, voorruit, spiegel] }
+- { slug: wipers, name: "Wipers", blurb: "Wear out and get replaced", warranty_type: none, wear_item: true, labor_hours: 0.2, parts_cost_usd: 35,
+    description: "Wiper blades and washers",
+    keywords: [wiper blade, windscreen washer, wiper, washer, ruitenwisser, sproeier] }
+- { slug: restraints, name: "Seat belts and airbags", blurb: "Safety gear that protects you in a crash", warranty_type: bumper_to_bumper, labor_hours: 1.5, parts_cost_usd: 400,
+    description: "Seat belts, seat mountings, airbags and SRS",
+    keywords: [seat belt, seatbelt, airbag warning, air bag, airbag, srs, seat, gordel, stoel] }
+- { slug: horn, name: "Horn", blurb: "Lets other drivers hear you", warranty_type: bumper_to_bumper, labor_hours: 0.5, parts_cost_usd: 40,
+    description: "Horn not working or wrong type",
+    keywords: [horn, claxon] }
+- { slug: hvac, name: "Heat and air conditioning", blurb: "Keep you warm, cool, and the windows clear", warranty_type: bumper_to_bumper, labor_hours: 3.0, parts_cost_usd: 700,
+    description: "A/C compressor, condenser, heater, demister",
+    keywords: [air conditioning, a/c, heater, demister, aircon, compressor] }
+- { slug: hybrid-battery, name: "Hybrid or electric battery", blurb: "The big battery that powers a hybrid or electric car", warranty_type: powertrain, labor_hours: 4.0, parts_cost_usd: 3500,
+    description: "High-voltage battery, hybrid system, charging faults",
+    keywords: [hybrid battery, high voltage, traction battery, hybrid system, charging] }
+- { slug: plates-id, name: "License plate and VIN", blurb: "The plate and the car's ID number", warranty_type: none, labor_hours: 0.3, parts_cost_usd: 30,
+    description: "Number plate condition, VIN missing or illegible",
+    keywords: [registration plate, number plate, vehicle identification, kenteken] }
+- { slug: other, name: "Other", blurb: "Anything else", warranty_type: none, labor_hours: 1.0, parts_cost_usd: 150,
+    description: "Anything that fits no other category", keywords: [] }

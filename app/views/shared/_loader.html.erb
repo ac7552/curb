@@ -1,0 +1,29 @@
+<%# Shown while a check is being built. The steps below are the real ones ReportBuilder runs, in the
+    order it runs them, so the wait explains itself rather than just spinning. %>
+<div class="loader" data-loader-target="overlay" hidden aria-hidden="true">
+  <div class="loader__panel" role="status" aria-live="polite">
+    <svg class="loader__scene" viewBox="0 0 200 80" aria-hidden="true">
+      <g class="loader__speed">
+        <line x1="4" y1="28" x2="20" y2="28" />
+        <line x1="0" y1="40" x2="14" y2="40" />
+        <line x1="6" y1="50" x2="18" y2="50" />
+      </g>
+
+      <g class="loader__car">
+        <path class="loader__body"
+              d="M26,54 L26,44 C26,40 29,37 33,36.5 L62,33 L80,20 C83,17.5 87,16 91,16
+                 L124,16 C129,16 133,18 136,21 L150,34 L170,37 C176,38 180,42 180,47 L180,54 Z" />
+        <path class="loader__glass" d="M84,24 L118,24 L132,34 L74,34 Z" />
+        <circle class="loader__wheel" cx="62" cy="56" r="11" />
+        <circle class="loader__wheel" cx="146" cy="56" r="11" />
+        <circle class="loader__hub" cx="62" cy="56" r="3.6" />
+        <circle class="loader__hub" cx="146" cy="56" r="3.6" />
+      </g>
+
+      <line class="loader__road" x1="0" y1="69" x2="200" y2="69" />
+    </svg>
+
+    <p class="loader__step" data-loader-target="step">Looking up the car…</p>
+    <p class="loader__hint">This takes a few seconds. We only ask the government's servers once.</p>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+# Maintenance booklets that cover every model a maker sold that year, at addresses that can't be built
+# from the year and model, so they're listed by hand (MaintenanceGuides::Sources::AddressFile).
+#
+#   years:  one year (2021) or a range ("2020-2021")
+#   models: the models a booklet covers, when it isn't every model that year
+#   kind:   all_models_booklet unless stated
+#
+# Checked 2026-10-03; each address returned a PDF. Fill in the missing years by finding the booklet on the
+# maker's site. Not here because they refuse programs: BMW and MINI (bmwusa.com), Volvo (volvocars.com).
+# Not here because the booklet has no schedule: Porsche, whose public warranty manual points to a
+# Maintenance Booklet that isn't published.
+Subaru:
+  - { years: 2019, url: "https://techinfo.subaru.com/stis/doc/warrantyBooklet/2019_war_and_maint_032019_S209_wHybridSup-2.pdf", title: "Subaru 2019 Warranty and Maintenance Booklet" }
+  - { years: 2020, url: "https://techinfo.subaru.com/stis/doc/warrantyBooklet/2020_war_and_maint__020720.pdf", title: "Subaru 2020 Warranty and Maintenance Booklet" }
+  - { years: 2021, url: "https://techinfo.subaru.com/stis/doc/warrantyBooklet/2021_war_and_maint__081120.pdf", title: "Subaru 2021 Warranty and Maintenance Booklet" }
+# Mitsubishi's US Warranty & Maintenance Manuals (mitsubishicars.com). Its normal schedule is "Schedule 2".
+Mitsubishi:
+  - { years: 2017, url: "https://www.mitsubishicars.com/content/dam/mitsubishi-motors-us/images/siteimages/pdf/what-drives-us/warranty/2017MY%20Warranty%20Non%20Turbo%20Complete.pdf", title: "Mitsubishi 2017 Warranty & Maintenance Manual" }
+  - { years: 2019, url: "https://www.mitsubishicars.com/content/dam/mitsubishi-motors-us/images/siteimages/pdf/what-drives-us/warranty/2019MY%20Waranty%20Manual%20Complete.pdf", title: "Mitsubishi 2019 Warranty & Maintenance Manual" }
+  - { years: 2021, url: "https://www.mitsubishicars.com/content/dam/mitsubishi-motors-us/images/siteimages/pdf/what-drives-us/warranty/21WM_Warranty.pdf", title: "Mitsubishi 2021 Warranty & Maintenance Manual" }
+  - { years: 2021, models: [Outlander PHEV], url: "https://www.mitsubishicars.com/content/dam/mitsubishi-motors-us/images/siteimages/pdf/what-drives-us/warranty/2021-Mitsubishi-Warranty-Outlander-PHEV.pdf", title: "Mitsubishi 2021 Outlander PHEV Warranty & Maintenance Manual", kind: maintenance_guide }
+  - { years: 2022, models: [Outlander], url: "https://www.mitsubishicars.com/content/dam/mitsubishi-motors-us/images/siteimages/pdf/what-drives-us/warranty/2022-Mitsubishi-Warranty-Outlander.pdf", title: "Mitsubishi 2022 Outlander Warranty & Maintenance Manual", kind: maintenance_guide }
+  - { years: 2022, models: [Outlander PHEV], url: "https://www.mitsubishicars.com/content/dam/mitsubishi-motors-us/images/siteimages/pdf/what-drives-us/warranty/2022-Mitsubishi-Warranty-Outlander-PHEV.pdf", title: "Mitsubishi 2022 Outlander PHEV Warranty & Maintenance Manual", kind: maintenance_guide }
+  - { years: 2022, models: [Eclipse Cross, Outlander Sport, Mirage, Mirage G4], url: "https://www.mitsubishicars.com/content/dam/mitsubishi-motors-us/images/siteimages/pdf/what-drives-us/warranty/22WM_GAS_Eclipse%20Cross,%20Outlander%20Sport,%20Mirage,%20Mirage%20G4.pdf", title: "Mitsubishi 2022 Warranty & Maintenance Manual" }
+  - { years: 2023, models: [Outlander Sport, Eclipse Cross, Mirage, Mirage G4], url: "https://www.mitsubishicars.com/content/dam/mitsubishi-motors-us/images/siteimages/pdf/what-drives-us/warranty/2023%20Outlander%20Sport_Eclipse%20Cross_Mirage_Mirage%20G4.pdf", title: "Mitsubishi 2023 Warranty & Maintenance Manual" }
+# Jeep's North American user guides, published in Fiat's eLUM handbook library (aftersales.fiat.com).
+Jeep:
+  - { years: 2018, models: [Grand Cherokee], url: "https://aftersales.fiat.com/eLumData/EN/57/604_NGRANDCHEROKEE/57_604_NGRANDCHEROKEE_18W.K7.42A_EN_02_02.18_L_LG/57_604_NGRANDCHEROKEE_18W.K7.42A_EN_02_02.18_L_LG.pdf", title: "Jeep 2018 Grand Cherokee User Guide", kind: owner_manual }
+  - { years: 2016, models: [Grand Cherokee], url: "https://aftersales.fiat.com/eLumData/EN/57/604_NGRANDCHEROKEE/57_604_NGRANDCHEROKEE_16W.K7.41A_EN_01_02.16_L_LG/57_604_NGRANDCHEROKEE_16W.K7.41A_EN_01_02.16_L_LG.pdf", title: "Jeep 2016 Grand Cherokee Operating Information", kind: owner_manual }
+  - { years: 2020, models: [Cherokee], url: "https://aftersales.fiat.com/eLumData/EN/57/603_NCHEROKEE/57_603_NCHEROKEE_20K.LA.AAA_EN_01_10.19_L_LG/57_603_NCHEROKEE_20K.LA.AAA_EN_01_10.19_L_LG.pdf", title: "Jeep 2020 Cherokee User Guide", kind: owner_manual }
+# BMW's maintenance book for each model year, every model (bmwusa.com, "Service and Warranty Books").
+# bmwusa.com refuses automated downloads, so a book is only read once someone has saved it from a browser
+# and imported it: bin/rails 'curb:guides:import[<address below>,<downloaded file>]'.
+BMW:
+  - { years: 2016, url: "https://www.bmwusa.com/content/dam/bmw/marketUS/common/warranty-books/2016/2016-BMW-3Series-5Series-7Series-Service-Warranty-Information.pdf", title: "BMW 2016 Maintenance" }
+  - { years: 2017, url: "https://www.bmwusa.com/content/dam/bmw/marketUS/common/warranty-books/2017/2017-BMW-Maintenance.pdf", title: "BMW 2017 Maintenance" }
+  - { years: 2018, url: "https://www.bmwusa.com/content/dam/bmw/marketUS/common/warranty-books/2018/2018-BMW-Maintenance.pdf", title: "BMW 2018 Maintenance" }
+  - { years: 2019, url: "https://www.bmwusa.com/content/dam/bmw/marketUS/common/warranty-books/2019/2019-BMW-Maintenance.pdf", title: "BMW 2019 Maintenance" }
+  - { years: 2020, url: "https://www.bmwusa.com/content/dam/bmw/marketUS/common/warranty-books/2020/5A0BC07_20MY_BMW_Maintenance_FINAL_Print_withCover_042220.pdf", title: "BMW 2020 Maintenance" }
+  - { years: 2021, url: "https://www.bmwusa.com/content/dam/bmw/marketUS/common/warranty-books/2021/5A1BC92_21MY_BMW_Maintenance_FINAL_Print_withCover_111220.pdf", title: "BMW 2021 Maintenance" }
+  - { years: 2022, url: "https://www.bmwusa.com/content/dam/bmw/marketUS/common/warranty-books/2022/BMW_2022_All_Models_Maintenance_ADA.pdf", title: "BMW 2022 Maintenance" }
+  - { years: 2023, url: "https://www.bmwusa.com/content/dam/bmw/marketUS/common/warranty-books/2023/BMW-MY-2023-All-Models-Maintenance-(On-line).pdf", title: "BMW 2023 Maintenance" }
+  - { years: 2024, url: "https://www.bmwusa.com/content/dam/bmw/marketUS/common/warranty-books/2024/BMW_MY_2024_All_Models_Maintenance_with_BEVs_PC2_4C.pdf", title: "BMW 2024 Maintenance" }
+  - { years: 2025, url: "https://www.bmwusa.com/content/dam/bmw/marketUS/common/warranty-books/2025/BMW_MY25_Maintenance_with_BEVs.pdf", title: "BMW 2025 Maintenance" }
