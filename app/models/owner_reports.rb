@@ -161,19 +161,20 @@ class OwnerReports
     # one. Every model counts once, so a few cars with thousands of complaints can't set what "normal" is.
     def typical_shares
       @typical_shares ||= begin
-        rows = ActiveRecord::Base.connection.select_rows(<<~SQL)
+        sql = ActiveRecord::Base.sanitize_sql_array([ <<~SQL, @model_year - 2, @model_year + 2, MIN_CAR_COMPLAINTS ])
           WITH cars AS (
             SELECT make_key, model_key, model_year, SUM(complaints) AS total
             FROM complaint_counts
-            WHERE model_year BETWEEN #{@model_year - 2} AND #{@model_year + 2}
+            WHERE model_year BETWEEN ? AND ?
             GROUP BY 1, 2, 3
-            HAVING SUM(complaints) >= #{MIN_CAR_COMPLAINTS}
+            HAVING SUM(complaints) >= ?
           )
           SELECT c.category_slug, SUM(c.complaints::float / cars.total) / (SELECT COUNT(*) FROM cars)
           FROM complaint_counts c
           JOIN cars USING (make_key, model_key, model_year)
           GROUP BY 1
         SQL
+        rows = ActiveRecord::Base.connection.select_rows(sql)
         rows.to_h { |slug, share| [ slug, share.to_f ] }
       end
     end
