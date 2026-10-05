@@ -67,7 +67,7 @@ gem "faraday-retry", "~> 2.2"
 # Sorting defect phrases into categories, and reading maintenance guides the rules can't
 gem "anthropic", "~> 1.23"
 # Plus subscriptions: checkout, the billing portal and webhooks [https://docs.stripe.com/api?lang=ruby]
-gem "stripe", "~> 15.0"
+gem "stripe", "~> 20.0"
 
 group :test do
   gem "webmock", "~> 3.24"
