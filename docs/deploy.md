@@ -56,10 +56,17 @@ Leave **Bot Fight Mode** off: it challenges automated requests, and Stripe's web
 Open Docker Desktop on your Mac and make sure there's about 10 GB free (the data copy writes a temporary file to
 `tmp/`). Kamal builds from the last commit, so commit before deploying.
 
+Make the database password once, and keep a copy in your password manager:
+
+```bash
+openssl rand -hex 24 > ~/.config/curb/database-password && chmod 600 ~/.config/curb/database-password
+```
+
+Then:
+
 ```bash
 export CURB_SERVER=203.0.113.10          # the droplet's IP
 export CURB_HOST=curb.example.com        # your domain
-export CURB_DATABASE_PASSWORD=$(openssl rand -hex 24)   # save this in your password manager
 
 bin/kamal setup                # installs Docker on the droplet, starts Postgres, builds and starts the app
 bin/copy-data-to-server        # copies the data tables from your development database
