@@ -59,6 +59,7 @@ Open Docker Desktop on your Mac and make sure there's about 10 GB free (the data
 Make the database password once, and keep a copy in your password manager:
 
 ```bash
+mkdir -p ~/.config/curb && chmod 700 ~/.config/curb
 openssl rand -hex 24 > ~/.config/curb/database-password && chmod 600 ~/.config/curb/database-password
 ```
 
