@@ -4,13 +4,13 @@
 # of the copy entirely, so the server's own users and reports are never touched (and this machine's demo login never
 # reaches the live site). Migration records stay the server's own too.
 #
-# Usage: CURB_SERVER=203.0.113.10 bin/copy-data-to-server
+# Usage: bin/copy-data-to-server (CURB_SERVER=<ip> to copy to a different server)
 # Deploy first (`bin/kamal setup` or `bin/kamal deploy`) so the server has the same migrations as this machine. The
 # copy replaces the server's data tables; pages may error for the few minutes it runs. It is several GB, so expect it
 # to take a while on a home connection.
 set -euo pipefail
 
-server="${CURB_SERVER:?Set CURB_SERVER to the IP address of the server}"
+server="${CURB_SERVER:-138.197.142.166}"
 source_db="${SOURCE_DB:-curb_app_development}"
 dump="tmp/curb-data.dump"
 

@@ -1,15 +1,14 @@
 # Deploys Curb to one server with Kamal: the app and its Postgres database run side by side as Docker containers.
 # Setup and first deploy: docs/deploy.md. Day to day: `bin/kamal deploy`.
 #
-# The server's address and the site's domain come from your shell, so they stay out of the repo:
-#   export CURB_SERVER=203.0.113.10   # the server's IP address
-#   export CURB_HOST=curb.example.com # a domain whose DNS A record points at that IP
+# The server (a DigitalOcean droplet in Toronto) and the site's domain. CURB_SERVER and CURB_HOST override them,
+# for example to deploy a copy elsewhere.
 service: curb
 image: curb
 
 servers:
   web:
-    - <%= ENV.fetch("CURB_SERVER", "203.0.113.10") %>
+    - <%= ENV.fetch("CURB_SERVER", "138.197.142.166") %>
 
 # Visitors reach Cloudflare, which forwards to kamal-proxy here over HTTPS using Cloudflare's origin certificate
 # (good for 15 years, so nothing to renew; see docs/deploy.md). kamal-proxy then hands requests to the app.
@@ -60,7 +59,7 @@ builder:
 accessories:
   db:
     image: postgres:17
-    host: <%= ENV.fetch("CURB_SERVER", "203.0.113.10") %>
+    host: <%= ENV.fetch("CURB_SERVER", "138.197.142.166") %>
     # Only reachable from the server itself, never from the internet.
     port: "127.0.0.1:5432:5432"
     env:

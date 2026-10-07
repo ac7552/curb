@@ -63,12 +63,10 @@ mkdir -p ~/.config/curb && chmod 700 ~/.config/curb
 openssl rand -hex 24 > ~/.config/curb/database-password && chmod 600 ~/.config/curb/database-password
 ```
 
+The droplet's IP and the domain are set in `config/deploy.yml` (`CURB_SERVER` and `CURB_HOST` override them).
 Then:
 
 ```bash
-export CURB_SERVER=203.0.113.10          # the droplet's IP
-export CURB_HOST=curb.example.com        # your domain
-
 bin/kamal setup                # installs Docker on the droplet, starts Postgres, builds and starts the app
 bin/copy-data-to-server        # copies the data tables from your development database
 ```
@@ -104,5 +102,5 @@ DigitalOcean's weekly backups copy the whole droplet. The database lives in `/ro
 you keep yourself:
 
 ```bash
-ssh root@$CURB_SERVER "docker exec curb-db pg_dump -U curb -Fc curb_app_production" > curb-backup.dump
+ssh root@138.197.142.166 "docker exec curb-db pg_dump -U curb -Fc curb_app_production" > curb-backup.dump
 ```
