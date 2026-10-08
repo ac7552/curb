@@ -50,8 +50,6 @@ module BillingSwitch
   def with_billing(on = true)
     Feature.set!(:billing, on)
     yield
-  ensure
-    Current.feature_states = nil
   end
 end
 ActiveSupport::TestCase.include BillingSwitch

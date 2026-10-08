@@ -1,5 +1,6 @@
 # Features that can be switched on and off from the admin panel, without a deploy. A switch an admin has
-# flipped (FeatureFlag) wins; until then it has its default. States are read once per request or job.
+# flipped (FeatureFlag) wins; until then it has its default. Read fresh each time: it's a tiny table, and a
+# switch then takes effect on the very next page.
 class Feature
   Definition = Data.define(:key, :name, :description, :default)
 
@@ -28,9 +29,8 @@ class Feature
   def self.set!(key, enabled, by: nil)
     flag = FeatureFlag.find_or_initialize_by(key: find(key).key)
     flag.update!(enabled:, updated_by: by)
-    Current.feature_states = nil
     flag
   end
 
-  def self.states = Current.feature_states ||= FeatureFlag.pluck(:key, :enabled).to_h
+  def self.states = FeatureFlag.pluck(:key, :enabled).to_h
 end
