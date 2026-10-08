@@ -579,6 +579,9 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .garage__start { border: 1px dashed var(--line-strong); border-radius: var(--radius); }
 .garage__upload form { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .garage__pick { cursor: pointer; }
+.garage__upload form + form { margin-top: 10px; }
+.garage__tips { margin-top: 12px; }
+.garage__tips ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; }
 .garage__photos { margin-top: 24px; border-top: 1px solid var(--line); }
 .garage__strip { list-style: none; padding: 0 0 16px; margin: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); counter-reset: photo; }
 .garage__strip li { display: grid; gap: 4px; justify-items: start; counter-increment: photo; font: 500 11px var(--font-mono); color: var(--ink-3); }
@@ -1269,6 +1272,7 @@ a.cite:hover { color: var(--ink); text-decoration: underline; text-underline-off
 .rpt-notes dd { margin: 0; }
 .rpt-notes dd span { margin-left: 6px; font-size: 14px; color: var(--ink-3); }
 .rpt-notes__total { padding-top: 10px; border-top: 1px solid var(--line); }
+.rpt-preview { margin-left: 8px; padding: 1px 6px; background: var(--accent-soft); color: var(--accent); font: 500 10px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; }
 .rpt-notes__total dd { font-weight: 600; }
 .rpt-mood { display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: baseline; margin-top: auto; }
 .rpt-mood .rpt-label { color: var(--ink); font-size: 12px; }

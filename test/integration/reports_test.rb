@@ -204,12 +204,21 @@ class ReportsTest < ActionDispatch::IntegrationTest
 
     get report_path(report)
     assert_select "summary", text: /Insurance/, count: 0
+    assert_select ".rpt-notes dt", text: "Insurance", count: 0
 
     users(:one).update!(admin: true)
     get report_path(report)
     assert_select "summary", text: /Insurance.*About \$1,790 a year/
     assert_match "Admin preview", response.body
+    assert_select ".rpt-notes div", text: /Insurance.*\$5,400.*about \$1,800 a year.*admin preview/m, count: 1, message: "rounded like the bill's other lines"
+    assert_select ".rpt-mood__line", text: /upkeep, repairs and insurance/
+    total = css_select(".rpt-notes__total dd").text.delete("$,").to_f
+    assert_operator total, :>=, report.results.dig("summary", "price").to_f + 5_400, "the total includes insurance"
     assert_match "priced as an average car", response.body
+
+    get shared_report_path(report.share_token)
+    assert_select ".rpt-notes dt", text: "Insurance", count: 0, message: "never on a shared link while it's a preview"
+    assert_select ".rpt-mood__line", text: /for upkeep and repairs, split/
 
     Feature.set!(:insurance_estimate, true)
     users(:one).update!(admin: false)

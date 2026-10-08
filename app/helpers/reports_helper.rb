@@ -167,6 +167,16 @@ module ReportsHelper
   # The bill's total: the price plus the upkeep and repairs lines as they're shown, so the bill adds up.
   def bill_total(summary) = summary[:price].to_f + about_amount(summary[:maintenance]) + about_amount(summary[:repairs])
 
+  # Insurance for the years they'll keep the car (Report#insurance_estimate), for the bill: { yearly:, total:, preview: }.
+  # Everyone sees it once the "insurance_estimate" feature is on; until then only admins, marked as a preview, and
+  # never on a shared link.
+  def insurance_in_bill(report, shared: false)
+    estimate = report.insurance_estimate or return
+    on = Feature.enabled?(:insurance_estimate)
+    return unless on || (!shared && Current.user&.admin?)
+    { yearly: about_amount(estimate.total), total: about_amount(estimate.total * report.ownership_years), preview: !on }
+  end
+
   def about_amount(amount)
     amount = amount.to_f
     step = if amount >= 1_000 then 100 elsif amount >= 100 then 10 else 5 end

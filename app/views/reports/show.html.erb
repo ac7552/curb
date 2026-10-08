@@ -12,7 +12,9 @@
 <% last_test = history && history[:tests].present? ? history[:tests].first : nil %>
 <% rolled_back = last_test && history[:tests].filter_map { _1[:mileage] }.each_cons(2).any? { |newer, older| newer < older } %>
 <% todo_count = 1 + (@report.country == "US" ? 1 + (programs.any? ? 1 : 0) : 0) + (last_test || history&.dig(:defects).present? ? 1 : 0) %>
-<% set_aside = about_amount(summary[:maintenance]) + about_amount(summary[:repairs]) %>
+<% insurance = insurance_in_bill(@report, shared: @shared) %>
+<% set_aside = about_amount(summary[:maintenance]) + about_amount(summary[:repairs]) + insurance.to_h.fetch(:total, 0) %>
+<% monthly = insurance ? about_amount(set_aside / (@report.ownership_years * 12)) : summary[:monthly_running] %>
 <% content_for :title, @report.title %>
 <% content_for :body_class, "body--report" %>
 <%# Built to decide in under a minute. The top card answers (photo, verdict, what it costs); the tabs below
@@ -75,11 +77,14 @@
         <div><dt>Price</dt><dd><%= money(summary[:price], market) %></dd></div>
         <div><dt>Upkeep</dt><dd><%= about_money(summary[:maintenance], market) %> <span>oil, filters, tires</span></dd></div>
         <div><dt>Repairs</dt><dd><%= about_money(summary[:repairs], market) %> <span>small fixes</span></dd></div>
-        <div class="rpt-notes__total"><dt>Total</dt><dd><%= money(bill_total(summary), market) %></dd></div>
+        <% if insurance %>
+          <div><dt>Insurance</dt><dd><%= money(insurance[:total], market) %> <span>about <%= money(insurance[:yearly], market) %> a year<%= tag.mark("admin preview", class: "rpt-preview") if insurance[:preview] %></span></dd></div>
+        <% end %>
+        <div class="rpt-notes__total"><dt>Total</dt><dd><%= money(bill_total(summary) + insurance.to_h.fetch(:total, 0), market) %></dd></div>
       </dl>
       <div class="rpt-mood">
         <p class="rpt-label">Each month</p>
-        <p class="rpt-mood__line">Save <%= about_money(summary[:monthly_running], market) %>.<span>That's <%= money(set_aside, market) %> for upkeep and repairs, split over <%= @report.ownership_years * 12 %> months.</span></p>
+        <p class="rpt-mood__line">Save <%= about_money(monthly, market) %>.<span>That's <%= money(set_aside, market) %> for <%= insurance ? "upkeep, repairs and insurance" : "upkeep and repairs" %>, split over <%= @report.ownership_years * 12 %> months.</span></p>
       </div>
     </div>
   </section>

@@ -63,4 +63,21 @@ class GarageTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert GarageCar.exists?(theirs.id)
   end
+
+  test "a walk-around's frames replace the photos already there, and a bad one leaves them alone" do
+    car = users(:one).garage_cars.create!(make: "Toyota", model: "Tacoma", model_year: 2019)
+    post garage_car_photos_path(car), params: { photos: [ photo, photo ] }
+    old_ids = car.reload.spin_photos.ids
+
+    post garage_car_photos_path(car), params: { replace: "1", photos: [ photo("fake.png") ] }
+    assert_equal old_ids, car.reload.spin_photos.ids, "a rejected walk-around keeps the old spin"
+
+    post garage_car_photos_path(car), params: { replace: "1", photos: Array.new(GarageCar::MAX_PHOTOS) { photo } }
+    assert_equal "Your 360° spin is ready.", flash[:notice]
+    assert_equal GarageCar::MAX_PHOTOS, car.reload.photos.count, "36 new frames, even though 2 photos were there"
+    assert_empty old_ids & car.spin_photos.ids
+
+    get garage_car_path(car)
+    assert_select "input[type=file][accept='video/*'][capture=environment]"
+  end
 end

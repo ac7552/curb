@@ -24,20 +24,42 @@
     <% else %>
       <div class="empty garage__start">
         <p class="h2">Spin your car 360°</p>
-        <p class="muted">Walk once around the car, taking a photo every few steps from the same height: 12 to 36 photos, in order. Curb turns them into a view you can spin.</p>
+        <p class="muted">Film a slow walk around your car. Curb turns it into a view you can spin, right on your phone.</p>
       </div>
     <% end %>
   </section>
 
   <section class="section--tight garage__upload">
-    <%= form_with url: garage_car_photos_path(@car), multipart: true, data: { controller: "photo-resize" } do |form| %>
+    <%# A walk-around video becomes the spin's photos on the phone; only the frames are uploaded. It replaces the
+        photos already there, so the spin is one smooth loop. %>
+    <%= form_with url: garage_car_photos_path(@car), multipart: true, data: { controller: "walkaround" } do |form| %>
+      <%= hidden_field_tag :replace, "1" %>
+      <%= file_field_tag "photos[]", multiple: true, class: "sr-only", tabindex: -1, aria: { hidden: true }, data: { walkaround_target: "frames" } %>
       <label class="btn btn--dark garage__pick">
-        <%= @photos.any? ? "Add photos" : "Choose photos" %>
+        Film a walk-around
+        <%= file_field_tag :walkaround_video, accept: "video/*", capture: "environment", class: "sr-only",
+                           data: { walkaround_target: "video", action: "change->walkaround#pick" } %>
+      </label>
+      <span class="small faint" data-walkaround-target="status"><%= @photos.any? ? "Replaces the photos above." : "Takes about 15 seconds." %></span>
+    <% end %>
+    <%= form_with url: garage_car_photos_path(@car), multipart: true, data: { controller: "photo-resize" } do |form| %>
+      <label class="btn btn--ghost btn--sm garage__pick">
+        <%= @photos.any? ? "Add photos" : "Or choose photos" %>
         <%= form.file_field :photos, multiple: true, accept: "image/jpeg,image/png,image/webp", class: "sr-only",
                             data: { photo_resize_target: "input", action: "change->photo-resize#prepare" } %>
       </label>
-      <span class="small faint" data-photo-resize-target="status">Up to <%= GarageCar::MAX_PHOTOS %> photos, in the order you walked around.</span>
+      <span class="small faint" data-photo-resize-target="status">Up to <%= GarageCar::MAX_PHOTOS %>, in the order you walked around.</span>
     <% end %>
+    <details class="garage__tips">
+      <summary class="small muted">How to film a good walk-around</summary>
+      <ul class="small muted">
+        <li>Hold the phone sideways, at chest height.</li>
+        <li>Stay the same distance from the car all the way round, about two big steps.</li>
+        <li>Walk at a steady pace for 10–20 seconds, and finish where you started.</li>
+        <li>Film in even light: avoid strong sun right behind the car.</li>
+        <li>Mind the license plate if you'll share pictures.</li>
+      </ul>
+    </details>
   </section>
 
   <% if @photos.any? %>
