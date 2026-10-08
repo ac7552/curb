@@ -37,7 +37,7 @@ env:
     # The real tables are copied over from your machine (docs/deploy.md); don't generate demo inspections.
     SKIP_DEMO: 1
     WEB_CONCURRENCY: 2
-    # Plus plans, payments and monthly check limits. Off until Stripe is set up (docs/billing.md).
+    # Default for Plus plans, payments and monthly check limits, until an admin flips it in Admin → Features.
     CURB_BILLING: "off"
 
 aliases:

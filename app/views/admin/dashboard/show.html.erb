@@ -1,0 +1,19 @@
+<% content_for :title, "Admin" %>
+<main class="page admin">
+  <%= render "admin/tabs" %>
+  <h1 class="display display--md">Overview</h1>
+
+  <section class="section grid-4">
+    <div class="stat"><span class="stat__label">Users</span><span class="stat__value"><%= number_with_delimiter(@users) %></span><span class="stat__note"><%= @new_users %> new this week</span></div>
+    <div class="stat"><span class="stat__label">Checks today</span><span class="stat__value"><%= number_with_delimiter(@checks_today) %></span><span class="stat__note"><%= @checks_week %> in the last 7 days</span></div>
+    <div class="stat"><span class="stat__label">Open errors</span><span class="stat__value"><%= @open_errors %></span><span class="stat__note"><%= link_to "See errors", admin_errors_path %></span></div>
+    <div class="stat"><span class="stat__label">Plans and payments</span><span class="stat__value"><%= Billing.enabled? ? "On" : "Off" %></span><span class="stat__note"><%= link_to "Features", admin_features_path %></span></div>
+  </section>
+
+  <% if @recent_errors.any? %>
+    <section class="section">
+      <h2 class="eyebrow about__head">Latest open errors</h2>
+      <%= render "admin/errors/table", errors: @recent_errors %>
+    </section>
+  <% end %>
+</main>

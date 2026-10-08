@@ -1,0 +1,21 @@
+<% content_for :title, "Features · Admin" %>
+<main class="page admin">
+  <%= render "admin/tabs" %>
+  <h1 class="display display--md">Features</h1>
+  <p class="muted">Switch parts of the site on and off. Changes apply straight away, with no deploy.</p>
+
+  <ul class="about__list section--tight">
+    <% @features.each do |feature| %>
+      <% on = Feature.enabled?(feature.key) %>
+      <li class="admin__feature">
+        <div>
+          <p><strong><%= feature.name %></strong> <span class="tag"><%= on ? "On" : "Off" %><%= " · default" unless Feature.set?(feature.key) %></span></p>
+          <p class="small muted"><%= feature.description %></p>
+        </div>
+        <%= button_to(on ? "Turn off" : "Turn on", admin_feature_path(feature.key, enabled: on ? "0" : "1"), method: :patch,
+                      class: [ "btn", on ? "btn--ghost" : "btn--dark" ],
+                      form: { data: { turbo_confirm: "Turn #{feature.name.downcase} #{on ? "off" : "on"} for everyone?" } }) %>
+      </li>
+    <% end %>
+  </ul>
+</main>

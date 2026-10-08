@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_05_120100) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_08_120200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -67,6 +67,36 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_05_120100) do
     t.string "severity"
     t.index ["defect_phrase_id"], name: "index_defects_on_defect_phrase_id"
     t.index ["inspection_id"], name: "index_defects_on_inspection_id"
+  end
+
+  create_table "error_events", force: :cascade do |t|
+    t.string "fingerprint", null: false
+    t.string "error_class", null: false
+    t.text "message"
+    t.text "backtrace"
+    t.string "source"
+    t.string "path"
+    t.string "request_id"
+    t.bigint "user_id"
+    t.integer "occurrences", default: 1, null: false
+    t.datetime "first_seen_at", null: false
+    t.datetime "last_seen_at", null: false
+    t.datetime "resolved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fingerprint"], name: "index_error_events_on_fingerprint", unique: true
+    t.index ["last_seen_at"], name: "index_error_events_on_last_seen_at"
+    t.index ["user_id"], name: "index_error_events_on_user_id"
+  end
+
+  create_table "feature_flags", force: :cascade do |t|
+    t.string "key", null: false
+    t.boolean "enabled", null: false
+    t.bigint "updated_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_feature_flags_on_key", unique: true
+    t.index ["updated_by_id"], name: "index_feature_flags_on_updated_by_id"
   end
 
   create_table "import_runs", force: :cascade do |t|
@@ -252,6 +282,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_05_120100) do
     t.string "stripe_subscription_id"
     t.string "subscription_status"
     t.datetime "plan_renews_at"
+    t.boolean "admin", default: false, null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id", unique: true
   end
@@ -295,6 +326,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_05_120100) do
   add_foreign_key "defect_phrases", "defect_categories"
   add_foreign_key "defects", "defect_phrases"
   add_foreign_key "defects", "inspections"
+  add_foreign_key "error_events", "users", on_delete: :nullify
+  add_foreign_key "feature_flags", "users", column: "updated_by_id", on_delete: :nullify
   add_foreign_key "inspections", "vehicles"
   add_foreign_key "recalls", "defect_categories"
   add_foreign_key "reports", "users"

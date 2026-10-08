@@ -1,0 +1,30 @@
+<% content_for :title, "Users · Admin" %>
+<main class="page admin">
+  <%= render "admin/tabs" %>
+  <h1 class="display display--md">Users</h1>
+
+  <%= form_with url: admin_users_path, method: :get, class: "admin__search" do |form| %>
+    <%= form.search_field :q, value: @query, placeholder: "Search by name or email", class: "input", aria: { label: "Search users" } %>
+    <%= form.submit "Search", class: "btn btn--ghost", name: nil %>
+  <% end %>
+  <p class="small faint"><%= pluralize(@total, "user") %><%= " matching “#{@query}”" if @query.present? %><%= " · showing the newest #{Admin::UsersController::LIMIT}" if @total > @users.size %></p>
+
+  <div class="table-wrap section--tight">
+    <table class="table">
+      <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Last seen</th><th class="n">Checks this month</th><th class="n">Saved checks</th><th>Plan</th></tr></thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td><%= user.name || "—" %><%= tag.span("Admin", class: "tag admin__badge") if user.admin? %></td>
+            <td><%= user.email_address %></td>
+            <td><%= l(user.created_at.to_date, format: :short) %></td>
+            <td><%= @last_seen[user.id] ? "#{time_ago_in_words(@last_seen[user.id])} ago" : "—" %></td>
+            <td class="n"><%= @checks_this_month.fetch(user.id, 0) %></td>
+            <td class="n"><%= @saved_checks.fetch(user.id, 0) %></td>
+            <td><%= user.plan_details.name %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</main>

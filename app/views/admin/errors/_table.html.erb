@@ -1,0 +1,15 @@
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Error</th><th>Where</th><th class="n">Times</th><th>Last seen</th></tr></thead>
+    <tbody>
+      <% errors.each do |error| %>
+        <tr>
+          <td><%= link_to error.error_class, admin_error_path(error) %><div class="small faint admin__message"><%= error.message.to_s.truncate(110) %></div></td>
+          <td class="small"><%= error.path || error.source || "—" %></td>
+          <td class="n"><%= number_with_delimiter(error.occurrences) %></td>
+          <td><%= time_ago_in_words(error.last_seen_at) %> ago</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

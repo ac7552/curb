@@ -20,5 +20,12 @@ Rails.application.routes.draw do
   get "vehicle_lookup/models", to: "vehicle_lookups#models", as: :vehicle_models
   get "models", to: "model_profiles#show", as: :model_profile
 
+  namespace :admin do
+    root "dashboard#show"
+    resources :users, only: :index
+    resources :errors, only: %i[index show update]
+    resources :features, only: %i[index update], param: :key
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

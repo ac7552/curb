@@ -44,14 +44,14 @@ module Claude
   end
 end
 
-# Runs the block with plans and payments switched on (or off), whatever CURB_BILLING says.
+# Runs the block with plans and payments switched on (or off), as if an admin had flipped the switch. The switch is a
+# database row, so the test's transaction undoes it.
 module BillingSwitch
   def with_billing(on = true)
-    original = Rails.configuration.x.billing
-    Rails.configuration.x.billing = on
+    Feature.set!(:billing, on)
     yield
   ensure
-    Rails.configuration.x.billing = original
+    Current.feature_states = nil
   end
 end
 ActiveSupport::TestCase.include BillingSwitch

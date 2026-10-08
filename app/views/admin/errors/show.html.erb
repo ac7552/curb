@@ -1,0 +1,27 @@
+<% content_for :title, "#{@error.error_class} · Admin" %>
+<main class="page admin">
+  <%= render "admin/tabs" %>
+  <h1 class="display display--sm"><%= @error.error_class %></h1>
+  <p class="lede admin__message"><%= @error.message %></p>
+
+  <dl class="admin__facts section--tight">
+    <div><dt>Times</dt><dd><%= number_with_delimiter(@error.occurrences) %></dd></div>
+    <div><dt>First seen</dt><dd><%= l(@error.first_seen_at, format: :long) %></dd></div>
+    <div><dt>Last seen</dt><dd><%= l(@error.last_seen_at, format: :long) %> (<%= time_ago_in_words(@error.last_seen_at) %> ago)</dd></div>
+    <div><dt>Where</dt><dd><%= @error.path || "—" %></dd></div>
+    <div><dt>From</dt><dd><%= @error.source || "—" %></dd></div>
+    <div><dt>Request</dt><dd><%= @error.request_id || "—" %></dd></div>
+    <div><dt>User</dt><dd><%= @error.user&.email_address || "—" %></dd></div>
+    <div><dt>Status</dt><dd><%= @error.resolved? ? "Resolved #{time_ago_in_words(@error.resolved_at)} ago" : "Open" %></dd></div>
+  </dl>
+
+  <div class="row section--tight">
+    <%= button_to(@error.resolved? ? "Reopen" : "Mark resolved", admin_error_path(@error, resolved: @error.resolved? ? "0" : "1"), method: :patch, class: "btn btn--dark") %>
+    <%= link_to "All errors", admin_errors_path, class: "btn btn--ghost" %>
+  </div>
+
+  <section class="section">
+    <h2 class="eyebrow about__head">Where in the code</h2>
+    <pre class="admin__backtrace"><%= @error.backtrace.presence || "No backtrace." %></pre>
+  </section>
+</main>

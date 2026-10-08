@@ -1,0 +1,19 @@
+<% content_for :title, "Errors · Admin" %>
+<main class="page admin">
+  <%= render "admin/tabs" %>
+  <h1 class="display display--md">Errors</h1>
+  <p class="muted">Crashes on the site, grouped by kind. Not-found pages and similar visitor mistakes aren't counted.</p>
+
+  <div class="chips chips--sm section--tight">
+    <%= link_to "Open", admin_errors_path, class: [ "chip", "chip--link", ("is-on" if @showing == "open") ] %>
+    <%= link_to "Resolved", admin_errors_path(show: "resolved"), class: [ "chip", "chip--link", ("is-on" if @showing == "resolved") ] %>
+  </div>
+
+  <div class="section--tight">
+    <% if @errors.any? %>
+      <%= render "admin/errors/table", errors: @errors %>
+    <% else %>
+      <p class="muted"><%= @showing == "open" ? "No open errors." : "Nothing resolved yet." %></p>
+    <% end %>
+  </div>
+</main>

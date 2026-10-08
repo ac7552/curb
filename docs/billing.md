@@ -1,8 +1,8 @@
 # Billing
 
 **Billing is switched off** until Stripe is ready: no Plans page, no payment buttons, and no limit on checks (checks
-are still counted). Turn it on by setting `CURB_BILLING: "on"` in `config/deploy.yml` and deploying; on your Mac,
-run the server with `CURB_BILLING=on bin/dev`.
+are still counted). Turn it on in the admin panel (**Admin → Features → Plans and payments**); it takes effect at
+once, no deploy. `CURB_BILLING` only sets the default for a site where no admin has flipped it yet.
 
 Plans and their limits live in `config/plans.yml`. Payments go through Stripe: Checkout takes the card,
 Stripe's billing portal lets people change or cancel, and a webhook keeps each user's plan in step
