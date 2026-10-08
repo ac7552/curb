@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     resources :posts, only: :create, controller: "forum_posts"
   end
   resources :forum_reports, path: "community/reports", only: :create
+  resources :forum_votes, path: "community/votes", only: :create
   get "community/:make", to: "community#make", as: :community_make
   get "community/:make/:model", to: "community#room", as: :community_room
   post "community/:make/:model/threads", to: "forum_threads#create", as: :community_room_threads

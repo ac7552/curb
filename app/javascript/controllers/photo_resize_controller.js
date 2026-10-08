@@ -4,9 +4,11 @@ const LONGEST_SIDE = 1600 // big enough to fill a laptop screen, small enough to
 const QUALITY = 0.85
 
 // Shrinks photos on the phone before they're uploaded (a phone photo is 3–5 MB; this makes it a few hundred KB),
-// then sends the form. If the browser can't, the originals go up as they are.
+// then sends the form (unless autosubmit is off, for forms with more to fill in). If the browser can't, the originals
+// go up as they are.
 export default class extends Controller {
   static targets = ["input", "status"]
+  static values = { autosubmit: { type: Boolean, default: true } }
 
   async prepare() {
     const files = [...this.inputTarget.files]
@@ -20,6 +22,10 @@ export default class extends Controller {
       this.inputTarget.files = transfer.files
     } catch {
       // Keep the originals; the server still checks them.
+    }
+    if (!this.autosubmitValue) {
+      this.statusTarget.textContent = `${files.length} picture${files.length === 1 ? "" : "s"} ready`
+      return
     }
     this.statusTarget.textContent = "Uploading…"
     this.element.requestSubmit()

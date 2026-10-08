@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :forum_threads, dependent: :destroy
   has_many :forum_posts, dependent: :destroy
   has_many :forum_reports, foreign_key: :reporter_id, dependent: :destroy
+  has_many :forum_votes, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :first_name, :last_name, with: ->(name) { name.squish }

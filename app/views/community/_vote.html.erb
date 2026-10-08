@@ -1,0 +1,11 @@
+<%# Up/down votes on a thread or reply. Your own posts show their score without buttons. %>
+<% mine = votable.user_id == Current.user.id %>
+<% value = my_votes.fetch([ votable.class.name, votable.id ], 0) %>
+<div class="vote <%= "vote--row" if local_assigns[:row] %>" data-controller="vote" data-vote-url-value="<%= forum_votes_path %>"
+     data-vote-type-value="<%= votable.class.name %>" data-vote-id-value="<%= votable.id %>" data-vote-value-value="<%= value %>">
+  <button type="button" class="vote__btn vote__btn--up <%= "is-on" if value == 1 %>" aria-label="Upvote" aria-pressed="<%= value == 1 %>"
+          data-vote-target="up" data-action="vote#up" <%= "disabled" if mine || Current.user.banned? %>>▲</button>
+  <span class="vote__score" data-vote-target="score"><%= votable.score %></span>
+  <button type="button" class="vote__btn vote__btn--down <%= "is-on" if value == -1 %>" aria-label="Downvote" aria-pressed="<%= value == -1 %>"
+          data-vote-target="down" data-action="vote#down" <%= "disabled" if mine || Current.user.banned? %>>▼</button>
+</div>

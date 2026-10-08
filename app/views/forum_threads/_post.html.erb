@@ -1,0 +1,47 @@
+<%# A reply and, nested under it, the replies to it. Top-level replies get the full card with the author panel;
+    deeper ones are compact. Each can be folded away. Indenting stops at 6 levels so threads stay readable on a phone. %>
+<% replies = @children.fetch(post.id, []) %>
+<% removed = post.hidden? && !Current.user.admin? %>
+<details class="post <%= depth.zero? ? "post--top" : "post--nested" %> <%= "post--deep" if depth >= 6 %>" id="post-<%= post.id %>" open>
+  <summary class="post__summary <%= "post__summary--bare" if depth.zero? && replies.empty? %>">
+    <% if depth.zero? && !removed %>
+      <span class="sr-only">Reply by <%= post.user.forum_name %></span>
+    <% else %>
+      <span class="post__who"><%= removed ? "[removed]" : post.user.forum_name %></span>
+      <% unless removed %><span class="small faint"><%= number_with_delimiter(@stats[post.user_id][:rep]) %> rep · <%= time_ago_in_words(post.created_at) %> ago</span><% end %>
+    <% end %>
+    <span class="post__fold small faint"><%= pluralize(replies.size, "reply", plural: "replies") if replies.any? %></span>
+  </summary>
+
+  <% if removed %>
+    <p class="small faint post__removed">Removed by a moderator.</p>
+  <% elsif depth.zero? %>
+    <article class="post-card">
+      <%= render "community/author", user: post.user, stats: @stats %>
+      <div class="post-card__main">
+        <header class="post-card__head">
+          <%= render "community/vote", votable: post, my_votes: @my_votes, row: true %>
+          <time class="small faint" datetime="<%= post.created_at.iso8601 %>"><%= l(post.created_at.to_date, format: :long) %><%= " · hidden" if post.hidden? %></time>
+        </header>
+        <div class="forum__body"><%= simple_format(h(post.body)) %></div>
+        <%= render "community/images", record: post %>
+        <%= render "forum_threads/post_actions", post: %>
+      </div>
+    </article>
+  <% else %>
+    <div class="post__body">
+      <div class="forum__body"><%= simple_format(h(post.body)) %></div>
+      <%= render "community/images", record: post %>
+      <div class="post__bar">
+        <%= render "community/vote", votable: post, my_votes: @my_votes, row: true %>
+        <%= render "forum_threads/post_actions", post: %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if replies.any? %>
+    <div class="post__replies">
+      <% replies.each do |reply| %><%= render "forum_threads/post", post: reply, depth: depth + 1 %><% end %>
+    </div>
+  <% end %>
+</details>

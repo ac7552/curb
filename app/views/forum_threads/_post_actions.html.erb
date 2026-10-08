@@ -1,0 +1,9 @@
+<footer class="post-card__foot">
+  <% if Current.user.can_post? %>
+    <details class="post__reply">
+      <summary class="link-btn">Reply</summary>
+      <%= render "forum_threads/reply_form", thread: post.thread, parent: post %>
+    </details>
+  <% end %>
+  <%= render "forum_threads/report", reportable: post unless post.user == Current.user %>
+</footer>

@@ -1,0 +1,15 @@
+<% if Current.user.banned? %>
+  <p class="muted">Your account can't post in Our Garage.</p>
+<% elsif !Current.user.can_post? %>
+  <p class="muted"><%= link_to "Add your first and last name", account_path %> to reply. Others see your first name and last initial.</p>
+<% else %>
+  <%= form_with model: ForumPost.new, url: forum_thread_posts_path(thread), multipart: true, class: "form form--tight forum__form" do |form| %>
+    <%= form.hidden_field :parent_id, value: parent&.id %>
+    <div class="field">
+      <%= form.label :body, parent ? "Reply to #{parent.user.forum_name}" : "Add a reply", for: "reply-body-#{parent&.id || "top"}" %>
+      <%= form.text_area :body, required: true, maxlength: 5_000, rows: parent ? 3 : 4, class: "input forum__textarea", id: "reply-body-#{parent&.id || "top"}" %>
+    </div>
+    <%= render "community/image_field", form:, uid: parent&.id || "top" %>
+    <div class="row"><%= form.submit "Reply", class: "btn btn--dark btn--sm" %><span class="small faint">Posting as <strong><%= Current.user.forum_name %></strong></span></div>
+  <% end %>
+<% end %>

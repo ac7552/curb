@@ -19,9 +19,12 @@ class CommunityController < ApplicationController
   def room
     @room = ForumRoom.find(params[:make], params[:model]) or raise ActiveRecord::RecordNotFound
     @page = [ params[:page].to_i, 1 ].max
-    @threads = @room.threads.latest.includes(:user).offset((@page - 1) * THREADS_PER_PAGE).limit(THREADS_PER_PAGE + 1).to_a
+    @sort = ForumThread::SORTS.key?(params[:sort]) ? params[:sort] : "hot"
+    @threads = @room.threads.sorted(@sort).includes(:user, images_attachments: :blob)
+                    .offset((@page - 1) * THREADS_PER_PAGE).limit(THREADS_PER_PAGE + 1).to_a
     @more = @threads.size > THREADS_PER_PAGE
     @threads = @threads.first(THREADS_PER_PAGE)
     @thread = ForumThread.new
+    @my_votes = Current.user.forum_votes.where(votable: @threads).to_h { [ [ _1.votable_type, _1.votable_id ], _1.value ] }
   end
 end

@@ -1,12 +1,18 @@
+<%# A room's threads, Reddit style: votes, title, who and when, replies, and a picture when there is one. %>
+<% my_votes = local_assigns.fetch(:my_votes, {}) %>
 <ul class="forum__threads">
   <% threads.each do |thread| %>
-    <li>
+    <li class="forum__row">
+      <%= render "community/vote", votable: thread, my_votes: %>
       <%= link_to forum_thread_path(thread), class: "forum__thread" do %>
         <span class="forum__thread-title"><%= thread.title %></span>
         <span class="small faint">
-          <% if local_assigns[:show_room] %><%= thread.room.title %> · <% end %><%= thread.user.forum_name %> ·
-          <%= pluralize(thread.forum_posts_count, "reply", plural: "replies") %> · <%= time_ago_in_words(thread.last_posted_at) %> ago
+          <% if local_assigns[:show_room] %><%= thread.room.title %> · <% end %><%= thread.user.forum_name %> · <%= time_ago_in_words(thread.created_at) %> ago ·
+          <%= pluralize(thread.forum_posts_count, "reply", plural: "replies") %><%= " · #{pluralize(thread.images.size, "picture")}" if thread.images.attached? %>
         </span>
+      <% end %>
+      <% if (cover = thread.images.first) %>
+        <%= link_to forum_thread_path(thread), class: "forum__cover", tabindex: -1, aria: { hidden: true } do %><%= image_tag url_for(cover), alt: "", loading: "lazy" %><% end %>
       <% end %>
     </li>
   <% end %>

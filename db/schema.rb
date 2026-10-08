@@ -148,7 +148,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_08_120201) do
     t.datetime "hidden_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "parent_id"
+    t.integer "score", default: 0, null: false
     t.index ["forum_thread_id"], name: "index_forum_posts_on_forum_thread_id"
+    t.index ["parent_id"], name: "index_forum_posts_on_parent_id"
     t.index ["user_id"], name: "index_forum_posts_on_user_id"
   end
 
@@ -176,8 +179,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_08_120201) do
     t.datetime "hidden_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "score", default: 0, null: false
     t.index ["make_key", "model_key", "last_posted_at"], name: "idx_on_make_key_model_key_last_posted_at_556abebe45"
+    t.index ["make_key", "model_key", "score"], name: "index_forum_threads_on_make_key_and_model_key_and_score"
     t.index ["user_id"], name: "index_forum_threads_on_user_id"
+  end
+
+  create_table "forum_votes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "votable_type", null: false
+    t.bigint "votable_id", null: false
+    t.integer "value", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "votable_type", "votable_id"], name: "index_forum_votes_on_user_id_and_votable_type_and_votable_id", unique: true
+    t.index ["user_id"], name: "index_forum_votes_on_user_id"
+    t.index ["votable_type", "votable_id"], name: "index_forum_votes_on_votable"
   end
 
   create_table "garage_accessories", force: :cascade do |t|
@@ -451,10 +468,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_08_120201) do
   add_foreign_key "defects", "inspections"
   add_foreign_key "error_events", "users", on_delete: :nullify
   add_foreign_key "feature_flags", "users", column: "updated_by_id", on_delete: :nullify
+  add_foreign_key "forum_posts", "forum_posts", column: "parent_id", on_delete: :cascade
   add_foreign_key "forum_posts", "forum_threads"
   add_foreign_key "forum_posts", "users"
   add_foreign_key "forum_reports", "users", column: "reporter_id"
   add_foreign_key "forum_threads", "users"
+  add_foreign_key "forum_votes", "users"
   add_foreign_key "garage_accessories", "garage_cars"
   add_foreign_key "garage_cars", "users"
   add_foreign_key "inspections", "vehicles"

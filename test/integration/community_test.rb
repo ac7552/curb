@@ -30,8 +30,8 @@ class CommunityTest < ActionDispatch::IntegrationTest
     assert_equal 1, thread.reload.forum_posts_count
 
     get forum_thread_path(thread)
-    assert_select ".forum__post", text: /Sam R\..*Running 265/m
-    assert_select ".forum__post", text: /Ana L\..*BFG KO2s/m
+    assert_select ".post-card--op", text: /Sam R\..*Running 265/m
+    assert_select ".post--top .post-card", text: /Ana L\..*BFG KO2s/m
     assert_no_match "rivera", response.body.downcase.sub(/\A.*<main/m, ""), "only a last initial is shown"
 
     get community_make_path("toyota")
@@ -92,5 +92,74 @@ class CommunityTest < ActionDispatch::IntegrationTest
     admin.update!(admin: false)
     get forum_thread_path(thread)
     assert_response :not_found
+  end
+
+  test "votes move a score up and down, once per person, and never on your own post" do
+    sign_in_as @sam
+    thread = start_thread
+
+    post forum_votes_path, params: { votable_type: "ForumThread", votable_id: thread.id, value: 1 }, as: :json
+    assert_response :unprocessable_entity, "not your own"
+
+    sign_in_as @ana
+    post forum_votes_path, params: { votable_type: "ForumThread", votable_id: thread.id, value: 1 }, as: :json
+    post forum_votes_path, params: { votable_type: "ForumThread", votable_id: thread.id, value: 1 }, as: :json
+    assert_equal({ "score" => 1, "value" => 1 }, response.parsed_body)
+
+    post forum_votes_path, params: { votable_type: "ForumThread", votable_id: thread.id, value: -1 }, as: :json
+    assert_equal -1, thread.reload.score
+    post forum_votes_path, params: { votable_type: "ForumThread", votable_id: thread.id, value: 0 }, as: :json
+    assert_equal 0, thread.reload.score
+    assert_equal 0, ForumVote.count
+  end
+
+  test "replies nest under the reply they answer, and best-voted replies come first" do
+    sign_in_as @sam
+    thread = start_thread
+    sign_in_as @ana
+    post forum_thread_posts_path(thread), params: { forum_post: { body: "Go with KO2s." } }
+    first = ForumPost.last
+    post forum_thread_posts_path(thread), params: { forum_post: { body: "Falkens are quieter." } }
+    second = ForumPost.last
+    sign_in_as @sam
+    post forum_thread_posts_path(thread), params: { forum_post: { body: "How do they do in snow?", parent_id: first.id } }
+    assert_equal first, ForumPost.last.parent
+    post forum_votes_path, params: { votable_type: "ForumPost", votable_id: second.id, value: 1 }, as: :json
+
+    get forum_thread_path(thread)
+    assert_select ".post--top", 2
+    assert_select ".post--top:first-of-type .forum__body", text: /Falkens/, count: 1
+    assert_select "#post-#{first.id} .post__replies #post-#{ForumPost.last.id}", text: /snow/
+
+    other = users(:two).forum_threads.create!(make_key: "TOYOTA", model_key: "TACOMA", title: "Other", body: "x")
+    post forum_thread_posts_path(other), params: { forum_post: { body: "Wrong thread", parent_id: first.id } }
+    assert_equal 0, other.posts.count, "a reply can't hang under a reply from another thread"
+  end
+
+  test "posts take up to four real pictures" do
+    sign_in_as @sam
+    picture = -> { fixture_file_upload("car.png", "image/png") }
+    post community_room_threads_path("toyota", "tacoma"), params: { forum_thread: { title: "My build", body: "Photos", images: [ picture.(), picture.() ] } }
+    thread = ForumThread.last
+    assert_equal 2, thread.images.count
+
+    get forum_thread_path(thread)
+    assert_select ".post-card--op .forum__images img", 2
+
+    post forum_thread_posts_path(thread), params: { forum_post: { body: "Too many", images: Array.new(5) { picture.() } } }
+    assert_equal 0, thread.posts.count
+    post forum_thread_posts_path(thread), params: { forum_post: { body: "Not a picture", images: [ fixture_file_upload("fake.png", "image/png") ] } }
+    assert_equal 0, thread.posts.count
+  end
+
+  test "rooms sort by hot, new, top and active" do
+    old = @ana.forum_threads.create!(make_key: "TOYOTA", model_key: "TACOMA", title: "Old favorite", body: "x", created_at: 3.days.ago, score: 50)
+    fresh = @ana.forum_threads.create!(make_key: "TOYOTA", model_key: "TACOMA", title: "Brand new", body: "x", score: 0)
+    sign_in_as @sam
+
+    get community_room_path("toyota", "tacoma", sort: "new")
+    assert_select ".forum__row:first-child .forum__thread-title", fresh.title
+    get community_room_path("toyota", "tacoma", sort: "top")
+    assert_select ".forum__row:first-child .forum__thread-title", old.title
   end
 end

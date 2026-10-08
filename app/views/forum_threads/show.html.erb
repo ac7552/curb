@@ -1,40 +1,66 @@
 <% content_for :title, "#{@thread.title} · Our Garage" %>
-<main class="page page--form forum">
-  <%= render "community/tabs", make_key: @thread.make_key, room: @thread.room %>
-  <% if @thread.hidden? %><p class="errors">Hidden by a moderator. Only admins can see this thread.</p><% end %>
+<% room = @thread.room %>
+<main class="page forum forum--thread">
+  <%# The breadcrumb bar, like a classic car forum's, with the page of replies on the right. %>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><%= link_to "Our Garage", community_path %></li>
+      <li><%= link_to room.make_name, community_make_path(room.make_slug) %></li>
+      <li><%= link_to room.model_name, community_room_path(room.make_slug, room.model_slug) %></li>
+      <li aria-current="page"><%= @thread.title %></li>
+    </ol>
+    <% if @pages > 1 %>
+      <span class="crumbs__pager">
+        <%= link_to "‹", forum_thread_path(@thread, sort: @sort, page: @page - 1), aria: { label: "Previous page" } if @page > 1 %>
+        <span><%= @page %> of <%= @pages %></span>
+        <%= link_to "›", forum_thread_path(@thread, sort: @sort, page: @page + 1), aria: { label: "Next page" } if @page < @pages %>
+      </span>
+    <% end %>
+  </nav>
 
-  <article class="forum__post forum__post--first">
-    <h1 class="display display--sm"><%= @thread.title %></h1>
-    <p class="small faint"><%= @thread.user.forum_name %> · <%= time_ago_in_words(@thread.created_at) %> ago</p>
-    <div class="forum__body"><%= simple_format(h(@thread.body)) %></div>
-    <%= render "forum_threads/report", reportable: @thread unless @thread.user == Current.user %>
+  <% if @thread.hidden? %><p class="errors section--tight">Hidden by a moderator. Only admins can see this thread.</p><% end %>
+
+  <article class="post-card post-card--op" id="thread">
+    <%= render "community/author", user: @thread.user, stats: @stats %>
+    <div class="post-card__main">
+      <header class="post-card__head">
+        <%= render "community/vote", votable: @thread, my_votes: @my_votes, row: true %>
+        <time class="small faint" datetime="<%= @thread.created_at.iso8601 %>"><%= l(@thread.created_at.to_date, format: :long) %></time>
+      </header>
+      <h1 class="post-card__title"><%= @thread.title %></h1>
+      <div class="forum__body"><%= simple_format(h(@thread.body)) %></div>
+      <%= render "community/images", record: @thread %>
+      <footer class="post-card__foot">
+        <a href="#reply" class="link-btn">Reply</a>
+        <%= render "forum_threads/report", reportable: @thread unless @thread.user == Current.user %>
+      </footer>
+    </div>
   </article>
 
+  <div class="row row--between section--tight">
+    <p class="about__label"><%= pluralize(@thread.forum_posts_count, "reply", plural: "replies") %></p>
+    <nav class="chips chips--sm" aria-label="Sort replies">
+      <% { "best" => "Best", "new" => "New", "old" => "Old" }.each do |key, label| %>
+        <%= link_to label, forum_thread_path(@thread, sort: key), class: [ "chip", "chip--link", ("is-on" if @sort == key) ] %>
+      <% end %>
+    </nav>
+  </div>
+
+  <section id="reply" class="section--tight">
+    <%= render "forum_threads/reply_form", thread: @thread, parent: nil %>
+  </section>
+
   <section class="section--tight" aria-label="Replies">
-    <% @posts.each do |post| %>
-      <article class="forum__post" id="post-<%= post.id %>">
-        <% if post.hidden? && !Current.user.admin? %>
-          <p class="small faint">Removed by a moderator.</p>
-        <% else %>
-          <p class="small faint"><%= post.user.forum_name %> · <%= time_ago_in_words(post.created_at) %> ago<%= " · hidden" if post.hidden? %></p>
-          <div class="forum__body"><%= simple_format(h(post.body)) %></div>
-          <%= render "forum_threads/report", reportable: post unless post.user == Current.user %>
-        <% end %>
-      </article>
+    <% @top.each do |post| %>
+      <%= render "forum_threads/post", post:, depth: 0 %>
     <% end %>
   </section>
 
-  <section class="section" id="reply">
-    <% if Current.user.banned? %>
-      <p class="muted">Your account can't post in Our Garage.</p>
-    <% elsif !Current.user.can_post? %>
-      <p class="muted"><%= link_to "Add your first and last name", account_path %> to reply. Others see your first name and last initial.</p>
-    <% else %>
-      <%= form_with model: @post, url: forum_thread_posts_path(@thread), class: "form form--tight forum__form" do |form| %>
-        <div class="field"><%= form.label :body, "Reply" %><%= form.text_area :body, required: true, maxlength: 5_000, rows: 4, class: "input forum__textarea" %></div>
-        <p class="small faint">Posting as <strong><%= Current.user.forum_name %></strong></p>
-        <div><%= form.submit "Reply", class: "btn btn--dark" %></div>
-      <% end %>
-    <% end %>
-  </section>
+  <% if @pages > 1 %>
+    <nav class="row section--tight" aria-label="Pages">
+      <%= link_to "‹ Previous", forum_thread_path(@thread, sort: @sort, page: @page - 1), class: "btn btn--ghost btn--sm" if @page > 1 %>
+      <span class="small faint">Page <%= @page %> of <%= @pages %></span>
+      <%= link_to "Next ›", forum_thread_path(@thread, sort: @sort, page: @page + 1), class: "btn btn--ghost btn--sm" if @page < @pages %>
+    </nav>
+  <% end %>
 </main>

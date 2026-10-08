@@ -626,18 +626,92 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .forum__make:hover { border-color: var(--ink-3); background: var(--surface); }
 .forum__make .make-logo { width: 36px; height: 36px; }
 .forum__threads { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--ink); }
-.forum__thread { display: grid; gap: 4px; padding: 16px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
-.forum__thread:hover .forum__thread-title { text-decoration: underline; text-underline-offset: 3px; }
+.forum__row { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.forum__thread { display: grid; gap: 4px; text-decoration: none; }
+.forum__cover img { width: 72px; height: 54px; object-fit: cover; border-radius: 6px; }
+.forum__thread-title { text-decoration: underline; text-underline-offset: 3px; }
 .forum__thread-title { font: 400 19px/1.3 var(--font-display); letter-spacing: -.01em; }
-.forum__post { padding: 18px 0; border-bottom: 1px solid var(--line); }
-.forum__post--first { border-bottom: 1px solid var(--ink); }
-.forum__post--first .display { margin: 10px 0 6px; }
 .forum__body { margin-top: 10px; line-height: 1.6; overflow-wrap: anywhere; }
 .forum__body p + p { margin-top: 10px; }
 .forum__textarea { min-height: 120px; padding: 12px 14px; resize: vertical; line-height: 1.5; }
 .forum__form { max-width: 720px; }
 .forum__report { margin-top: 10px; }
 .forum__report-form { display: grid; gap: 6px; margin-top: 8px; padding: 12px; background: var(--surface); justify-items: start; }
+
+/* Votes: a column in thread lists, a pill on posts */
+.vote { display: grid; justify-items: center; gap: 2px; }
+.vote--row { display: inline-flex; align-items: center; gap: 2px; padding: 2px; border: 1px solid var(--line); border-radius: 999px; }
+.vote__btn { width: 26px; height: 24px; padding: 0; border: 0; border-radius: 999px; background: none; color: var(--ink-3); font-size: 11px; cursor: pointer; }
+.vote__btn:hover:not(:disabled) { background: var(--surface); color: var(--ink); }
+.vote__btn:disabled { cursor: default; opacity: .35; }
+.vote__btn--up.is-on { color: var(--accent); }
+.vote__btn--down.is-on { color: var(--series-1); }
+.vote__score { min-width: 2ch; text-align: center; font: 500 13px var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* The thread page: a breadcrumb bar and post cards with the author on the left, like a classic car forum */
+.forum--thread { max-width: 1040px; }
+.crumbs { position: sticky; top: 72px; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 10px 18px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); }
+.crumbs ol { display: flex; flex-wrap: nowrap; gap: 8px; min-width: 0; margin: 0; padding: 0; list-style: none; overflow: hidden; font-size: 14px; }
+.crumbs li { white-space: nowrap; }
+.crumbs li + li::before { content: "›"; margin-right: 8px; color: var(--ink-3); }
+.crumbs li a { color: var(--accent); text-decoration: none; }
+.crumbs li[aria-current] { overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+.crumbs__pager { display: inline-flex; align-items: center; gap: 10px; flex: none; font: 500 12px var(--font-mono); }
+.crumbs__pager a { text-decoration: none; font-size: 16px; }
+
+.post-card { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 24px; margin-top: 16px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: color-mix(in srgb, var(--bg) 60%, var(--surface)); }
+.post-card--op { margin-top: 20px; background: var(--bg); }
+.post-card__head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.post-card__title { margin: 14px 0 0; font: 400 clamp(24px, 3vw, 32px)/1.15 var(--font-display); letter-spacing: -.025em; }
+.post-card__foot { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; margin-top: 14px; }
+.post-card__foot .forum__report { margin-top: 0; }
+
+.author { display: grid; align-content: start; gap: 10px; }
+.author > div:first-of-type { display: grid; gap: 2px; }
+.author__avatar { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; background: var(--ink); color: var(--on-ink); font: 400 22px var(--font-display); }
+.author__name { font-weight: 500; color: var(--accent); }
+.author__admin { margin-left: 6px; }
+.author__rank { font-size: 13px; color: var(--ink-2); }
+.author__stats { display: flex; margin: 4px 0 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; width: fit-content; }
+.author__stats > div { display: grid; justify-items: center; padding: 6px 12px; }
+.author__stats > div + div { border-left: 1px solid var(--line); }
+.author__stats dd { margin: 0; font-weight: 500; font-variant-numeric: tabular-nums; }
+.author__stats dt { font: 500 10px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+
+.forum__images { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin-top: 14px; }
+.forum__images img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); }
+
+/* Replies, Reddit style: each can fold away, and replies to it hang under a line */
+.post > .post__summary { display: flex; align-items: baseline; gap: 10px; padding: 6px 0; list-style: none; cursor: pointer; }
+.post > .post__summary::after { content: none; }
+.post > .post__summary::before { content: "−"; display: inline-grid; place-items: center; width: 18px; height: 18px; border: 1px solid var(--line-strong); border-radius: 4px; font-size: 12px; color: var(--ink-3); flex: none; }
+.post:not([open]) > .post__summary::before { content: "+"; }
+.post--top { margin-top: 12px; }
+.post--top > .post__summary { padding-bottom: 0; }
+.post__summary--bare { display: none !important; }
+.post--top > .post__summary { justify-content: flex-end; }
+.post__who { font-weight: 500; color: var(--accent); font-size: 14px; }
+.post__body { padding: 0 0 6px 28px; }
+.post__bar { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; margin-top: 8px; }
+.post__bar .post-card__foot { margin-top: 2px; }
+.post__replies { margin-left: 8px; padding-left: 18px; border-left: 2px solid var(--line); }
+.post--deep .post__replies { margin-left: 0; padding-left: 0; border-left: 0; }
+.post__removed { padding: 4px 0 8px 28px; }
+.post__reply > summary { list-style: none; }
+.post__reply > summary::after { content: none; }
+.post__reply[open] { flex-basis: 100%; }
+.post__reply .forum__form { margin-top: 10px; }
+
+@media (max-width: 720px) {
+  .post-card { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
+  .author { grid-template-columns: auto 1fr auto; align-items: center; }
+  .author__avatar { width: 40px; height: 40px; font-size: 18px; }
+  .author__stats { margin: 0; }
+  .crumbs { top: 64px; border-radius: 14px; }
+  .forum__row { grid-template-columns: 36px minmax(0, 1fr); }
+  .forum__cover { display: none; }
+}
 
 /* ---------- Report ---------- */
 

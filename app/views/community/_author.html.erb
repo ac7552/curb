@@ -1,0 +1,13 @@
+<%# A poster's card: initial, name, rank, and their reputation and post count (ForumStats). %>
+<% stat = stats[user.id] %>
+<div class="author">
+  <span class="author__avatar" aria-hidden="true"><%= user.forum_name.first %></span>
+  <div>
+    <p class="author__name"><%= user.forum_name %><%= tag.span("Admin", class: "tag author__admin") if user.admin? %></p>
+    <p class="author__rank"><%= ForumStats.rank(stat[:posts]) %></p>
+  </div>
+  <dl class="author__stats">
+    <div><dd><%= number_with_delimiter(stat[:rep]) %></dd><dt>Rep</dt></div>
+    <div><dd><%= number_with_delimiter(stat[:posts]) %></dd><dt>Posts</dt></div>
+  </dl>
+</div>

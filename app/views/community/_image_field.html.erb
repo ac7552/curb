@@ -1,0 +1,7 @@
+<% field_id = "#{form.object_name}-images-#{local_assigns.fetch(:uid, "new")}" %>
+<div class="field" data-controller="photo-resize" data-photo-resize-autosubmit-value="false">
+  <%= form.label :images, "Pictures (optional, up to #{ForumContent::MAX_IMAGES})", for: field_id %>
+  <%= form.file_field :images, multiple: true, id: field_id, accept: "image/jpeg,image/png,image/webp", class: "input",
+                      data: { photo_resize_target: "input", action: "change->photo-resize#prepare" } %>
+  <span class="field__hint" data-photo-resize-target="status"></span>
+</div>
