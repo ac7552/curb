@@ -1,0 +1,58 @@
+<% content_for :title, @car.name %>
+<main class="page garage">
+  <p class="eyebrow"><%= link_to "My Garage", garage_cars_path %> · <%= @car.title %></p>
+  <div class="row row--between">
+    <h1 class="display display--md"><%= @car.name %></h1>
+    <%= link_to "Edit", edit_garage_car_path(@car), class: "btn btn--ghost btn--sm" %>
+  </div>
+
+  <section class="section--tight" aria-label="360° view">
+    <% if @photos.any? %>
+      <div class="spin" data-controller="spin" data-spin-frames-value="<%= @photos.size %>" tabindex="0"
+           aria-label="<%= @car.name %>, <%= @photos.size %> photos. Drag or use the arrow keys to turn it."
+           data-action="pointerdown->spin#grab keydown->spin#key">
+        <% @photos.each_with_index do |photo, index| %>
+          <figure class="spin__frame <%= "is-on" if index.zero? %>" data-spin-target="frame" data-photo-id="<%= photo.id %>">
+            <%= image_tag url_for(photo), alt: "", draggable: false, loading: index.zero? ? "eager" : "lazy", decoding: "async" %>
+            <%= render "garage_cars/overlays", accessories: @accessories, photo: %>
+          </figure>
+        <% end %>
+        <p class="spin__hint" data-spin-target="hint"><%= @photos.size > 1 ? "← Drag to turn →" : "Add more photos to turn it" %></p>
+        <p class="spin__count"><span data-spin-target="count">1</span> / <%= @photos.size %></p>
+      </div>
+    <% else %>
+      <div class="empty garage__start">
+        <p class="h2">Spin your car 360°</p>
+        <p class="muted">Walk once around the car, taking a photo every few steps from the same height: 12 to 36 photos, in order. Curb turns them into a view you can spin.</p>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="section--tight garage__upload">
+    <%= form_with url: garage_car_photos_path(@car), multipart: true, data: { controller: "photo-resize" } do |form| %>
+      <label class="btn btn--dark garage__pick">
+        <%= @photos.any? ? "Add photos" : "Choose photos" %>
+        <%= form.file_field :photos, multiple: true, accept: "image/jpeg,image/png,image/webp", class: "sr-only",
+                            data: { photo_resize_target: "input", action: "change->photo-resize#prepare" } %>
+      </label>
+      <span class="small faint" data-photo-resize-target="status">Up to <%= GarageCar::MAX_PHOTOS %> photos, in the order you walked around.</span>
+    <% end %>
+  </section>
+
+  <% if @photos.any? %>
+    <details class="more garage__photos">
+      <summary><span>Photos</span><span class="more__hint"><%= pluralize(@photos.size, "photo") %></span></summary>
+      <ol class="garage__strip">
+        <% @photos.each do |photo| %>
+          <li>
+            <%= image_tag url_for(photo), alt: "", loading: "lazy" %>
+            <%= button_to "Remove", garage_car_photo_path(@car, photo), method: :delete, class: "link-btn",
+                          form: { data: { turbo_confirm: "Remove this photo?" } } %>
+          </li>
+        <% end %>
+      </ol>
+    </details>
+  <% end %>
+
+  <%= render "garage_cars/accessories", car: @car, accessories: @accessories, photos: @photos %>
+</main>

@@ -15,6 +15,9 @@ Rails.application.routes.draw do
   resources :reports, only: %i[index new create show destroy] do
     get :photo, on: :member
   end
+  resources :garage_cars, path: "garage" do
+    resources :photos, only: %i[create destroy], controller: "garage_photos"
+  end
   get "r/:token", to: "shared_reports#show", as: :shared_report
   get "vehicle_lookup", to: "vehicle_lookups#show", as: :vehicle_lookup
   get "vehicle_lookup/models", to: "vehicle_lookups#models", as: :vehicle_models

@@ -5,6 +5,7 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :reports, dependent: :destroy
   has_many :usage_events, dependent: :delete_all
+  has_many :garage_cars, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :first_name, :last_name, with: ->(name) { name.squish }

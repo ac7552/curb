@@ -561,6 +561,42 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .admin__feature { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
 .admin__feature form { flex: none; }
 
+/* ---------- My Garage ---------- */
+
+.garage .display { margin-top: 10px; }
+.garage .lede { margin-top: 12px; }
+.garage__cars { list-style: none; padding: 0; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.garage__card { display: grid; gap: 6px; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius); text-decoration: none; background: color-mix(in srgb, var(--bg) 60%, var(--surface)); }
+.garage__card:hover { border-color: var(--ink-3); }
+.garage__thumb { aspect-ratio: 4 / 3; overflow: hidden; margin-bottom: 6px; border-radius: calc(var(--radius) - 8px); background: var(--surface); display: grid; place-items: center; }
+.garage__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.garage__no-photo { font: 500 11px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.garage__start { border: 1px dashed var(--line-strong); border-radius: var(--radius); }
+.garage__upload form { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.garage__pick { cursor: pointer; }
+.garage__photos { margin-top: 24px; border-top: 1px solid var(--line); }
+.garage__strip { list-style: none; padding: 0 0 16px; margin: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); counter-reset: photo; }
+.garage__strip li { display: grid; gap: 4px; justify-items: start; counter-increment: photo; font: 500 11px var(--font-mono); color: var(--ink-3); }
+.garage__strip li::before { content: counter(photo); }
+.garage__strip img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+
+/* The 360° spin: one photo of the walk-around at a time, accessories laid over it */
+.spin { position: relative; overflow: hidden; border-radius: var(--radius); background: var(--surface); touch-action: pan-y; user-select: none; cursor: grab; outline-offset: 4px; }
+.spin.is-dragging { cursor: grabbing; }
+.spin__frame { position: relative; margin: 0; display: none; }
+.spin__frame.is-on { display: block; }
+.spin__frame > img:first-child { display: block; width: 100%; max-height: 70vh; object-fit: contain; pointer-events: none; }
+.spin__overlay { position: absolute; height: auto; translate: -50% -50%; rotate: var(--turn, 0deg); pointer-events: none; }
+.spin__overlay.is-knocked-out { mix-blend-mode: multiply; }
+.spin__hint, .spin__count { position: absolute; bottom: 12px; margin: 0; padding: 5px 10px; background: color-mix(in srgb, var(--bg) 85%, transparent); font: 500 11px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); pointer-events: none; }
+.spin__hint { left: 50%; translate: -50% 0; }
+.spin__count { right: 12px; }
+
+@media (max-width: 640px) {
+  .nav__links { overflow-x: auto; scrollbar-width: none; }
+  .nav__links::-webkit-scrollbar { display: none; }
+}
+
 /* ---------- Report ---------- */
 
 

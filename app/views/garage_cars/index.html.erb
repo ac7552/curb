@@ -1,0 +1,36 @@
+<% content_for :title, "My Garage" %>
+<main class="page garage">
+  <p class="eyebrow">My Garage</p>
+  <div class="row row--between">
+    <h1 class="display display--md">Your cars</h1>
+    <%= link_to "Add a car", new_garage_car_path, class: "btn btn--dark" %>
+  </div>
+  <p class="lede">Keep your cars here. Walk around one taking photos to spin it 360°, and try accessories on it before you buy.</p>
+
+  <% if @cars.any? %>
+    <ul class="garage__cars section">
+      <% @cars.each do |car| %>
+        <li>
+          <%= link_to garage_car_path(car), class: "garage__card" do %>
+            <div class="garage__thumb">
+              <% if (first = car.photos.attachments.min_by(&:id)) %>
+                <%= image_tag url_for(first), alt: "", loading: "lazy" %>
+              <% else %>
+                <span class="garage__no-photo">No photos yet</span>
+              <% end %>
+            </div>
+            <p class="about__label"><%= car.title %></p>
+            <p class="h3"><%= car.name %></p>
+            <p class="small faint"><%= pluralize(car.photos.attachments.size, "photo") %></p>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <div class="empty section">
+      <p class="h2">Your garage is empty</p>
+      <p class="muted">Add the car you drive to spin it 360° and try accessories on it.</p>
+      <div class="row"><%= link_to "Add a car", new_garage_car_path, class: "btn btn--dark" %></div>
+    </div>
+  <% end %>
+</main>

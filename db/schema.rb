@@ -10,9 +10,51 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_08_120200) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_08_120201) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "accessory_placements", force: :cascade do |t|
+    t.bigint "garage_accessory_id", null: false
+    t.bigint "photo_id", null: false
+    t.decimal "x", precision: 6, scale: 5, null: false
+    t.decimal "y", precision: 6, scale: 5, null: false
+    t.decimal "width", precision: 6, scale: 5, null: false
+    t.decimal "rotation", precision: 6, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["garage_accessory_id", "photo_id"], name: "index_accessory_placements_on_garage_accessory_id_and_photo_id", unique: true
+    t.index ["garage_accessory_id"], name: "index_accessory_placements_on_garage_accessory_id"
+    t.index ["photo_id"], name: "index_accessory_placements_on_photo_id"
+  end
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "complaint_counts", force: :cascade do |t|
     t.string "make_key", null: false
@@ -97,6 +139,28 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_08_120200) do
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_feature_flags_on_key", unique: true
     t.index ["updated_by_id"], name: "index_feature_flags_on_updated_by_id"
+  end
+
+  create_table "garage_accessories", force: :cascade do |t|
+    t.bigint "garage_car_id", null: false
+    t.string "url", null: false
+    t.string "title", null: false
+    t.string "price"
+    t.boolean "remove_background", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["garage_car_id"], name: "index_garage_accessories_on_garage_car_id"
+  end
+
+  create_table "garage_cars", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "make", null: false
+    t.string "model", null: false
+    t.integer "model_year", null: false
+    t.string "nickname"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_garage_cars_on_user_id"
   end
 
   create_table "import_runs", force: :cascade do |t|
@@ -338,11 +402,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_08_120200) do
     t.index ["country", "make_key", "coverage_type"], name: "index_warranty_terms_on_country_and_make_key_and_coverage_type"
   end
 
+  add_foreign_key "accessory_placements", "active_storage_attachments", column: "photo_id", on_delete: :cascade
+  add_foreign_key "accessory_placements", "garage_accessories"
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "defect_phrases", "defect_categories"
   add_foreign_key "defects", "defect_phrases"
   add_foreign_key "defects", "inspections"
   add_foreign_key "error_events", "users", on_delete: :nullify
   add_foreign_key "feature_flags", "users", column: "updated_by_id", on_delete: :nullify
+  add_foreign_key "garage_accessories", "garage_cars"
+  add_foreign_key "garage_cars", "users"
   add_foreign_key "inspections", "vehicles"
   add_foreign_key "recalls", "defect_categories"
   add_foreign_key "reports", "users"

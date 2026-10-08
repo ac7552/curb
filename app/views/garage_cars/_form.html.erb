@@ -1,0 +1,32 @@
+<%= form_with model: car, url: car.persisted? ? garage_car_path(car) : garage_cars_path, class: "form",
+              data: { controller: "vehicle-picker", vehicle_picker_url_value: vehicle_models_path } do |form| %>
+  <%= render "shared/errors", record: car %>
+  <div class="fields">
+    <div class="field">
+      <%= form.label :model_year, "Year" %>
+      <%= form.number_field :model_year, required: true, min: 1950, max: Date.current.year + 1, class: "input",
+                            data: { vehicle_picker_target: "year", action: "change->vehicle-picker#load" } %>
+    </div>
+    <div class="field">
+      <%= form.label :make %>
+      <%= form.text_field :make, required: true, list: "garage-makes", autocomplete: "off", class: "input",
+                          data: { vehicle_picker_target: "make", action: "change->vehicle-picker#load" } %>
+      <datalist id="garage-makes">
+        <% MakeCatalog.makes(Current.user.country || "US").each do |make| %><option value="<%= make[:name] %>"></option><% end %>
+      </datalist>
+    </div>
+    <div class="field">
+      <%= form.label :model %>
+      <%= form.text_field :model, required: true, list: "garage-models", autocomplete: "off", class: "input" %>
+      <datalist id="garage-models" data-vehicle-picker-target="models"></datalist>
+    </div>
+  </div>
+  <div class="field">
+    <%= form.label :nickname, "Nickname (optional)" %>
+    <%= form.text_field :nickname, maxlength: 60, placeholder: "Daily driver", class: "input" %>
+  </div>
+  <div class="row">
+    <%= form.submit car.persisted? ? "Save" : "Add to my garage", class: "btn btn--dark" %>
+    <%= link_to "Cancel", car.persisted? ? garage_car_path(car) : garage_cars_path, class: "btn btn--ghost" %>
+  </div>
+<% end %>

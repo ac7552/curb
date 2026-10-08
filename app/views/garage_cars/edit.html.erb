@@ -1,0 +1,10 @@
+<% content_for :title, "Edit #{@car.name}" %>
+<main class="page page--form garage">
+  <p class="eyebrow">My Garage</p>
+  <h1 class="display display--md">Edit <%= @car.name %></h1>
+  <div class="section--tight"><%= render "form", car: @car %></div>
+  <section class="section">
+    <%= button_to "Remove from my garage", garage_car_path(@car), method: :delete, class: "link-btn",
+                  form: { data: { turbo_confirm: "Remove #{@car.name}, its photos and accessories?" } } %>
+  </section>
+</main>
