@@ -1,1 +1,59 @@
-<%# Filled in by the accessories stage. %>
+<section class="section" id="accessories" aria-labelledby="accessories-title">
+  <h2 class="eyebrow about__head" id="accessories-title">Accessories</h2>
+  <p class="muted">Paste a link to a product you're thinking of buying. Then turn the car to a photo and place it there.</p>
+
+  <%= form_with model: GarageAccessory.new, url: garage_car_accessories_path(car), multipart: true, class: "garage__add section--tight" do |form| %>
+    <div class="input-group">
+      <%= form.url_field :url, value: params[:accessory_url], required: true, placeholder: "https://shop.example.com/roof-rack", class: "input", aria: { label: "Product link" } %>
+      <%= form.submit "Add", class: "btn btn--dark" %>
+    </div>
+    <details class="garage__manual" <%= "open" if params[:accessory_url].present? %>>
+      <summary class="small muted">Shop won't share its details? Add them yourself</summary>
+      <div class="fields">
+        <div class="field"><%= form.label :title, "Product name" %><%= form.text_field :title, maxlength: 200, class: "input" %></div>
+        <div class="field"><%= form.label :price, "Price (optional)" %><%= form.text_field :price, maxlength: 40, class: "input" %></div>
+        <div class="field"><%= form.label :image, "Picture" %><%= form.file_field :image, accept: "image/jpeg,image/png,image/webp", class: "input" %></div>
+      </div>
+    </details>
+  <% end %>
+
+  <% if accessories.any? %>
+    <ul class="garage__accessories">
+      <% accessories.each do |accessory| %>
+        <li class="garage__accessory" data-accessory-editor-target="row" data-accessory-id="<%= accessory.id %>"
+            data-placements-url="<%= garage_car_accessory_placements_path(car, accessory) %>"
+            data-image-url="<%= url_for(accessory.image) if accessory.image.attached? %>"
+            data-title="<%= accessory.title %>" data-knocked-out="<%= accessory.remove_background %>">
+          <div class="garage__accessory-thumb">
+            <%= image_tag url_for(accessory.image), alt: "", loading: "lazy", class: ("is-knocked-out" if accessory.remove_background) if accessory.image.attached? %>
+          </div>
+          <div>
+            <p><%= link_to accessory.title, accessory.url, target: "_blank", rel: "nofollow noopener noreferrer ugc" %></p>
+            <p class="small faint"><%= [ accessory.store, accessory.price ].compact_blank.join(" · ") %> · on <%= pluralize(accessory.placements.size, "photo") %></p>
+            <div class="row garage__accessory-actions">
+              <% if photos.any? && accessory.image.attached? %>
+                <button type="button" class="btn btn--sm btn--dark" data-action="accessory-editor#place">Place on this photo</button>
+              <% end %>
+              <%= button_to(accessory.remove_background ? "Show white background" : "Hide white background",
+                            garage_car_accessory_path(car, accessory, garage_accessory: { remove_background: accessory.remove_background ? "0" : "1" }),
+                            method: :patch, class: "btn btn--sm btn--ghost") if accessory.image.attached? %>
+              <%= button_to "Remove", garage_car_accessory_path(car, accessory), method: :delete, class: "link-btn",
+                            form: { data: { turbo_confirm: "Remove #{accessory.title}?" } } %>
+            </div>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div class="garage__editor" data-accessory-editor-target="panel" hidden>
+    <p class="about__label">Placing <span data-accessory-editor-target="name"></span> · drag it on the photo</p>
+    <label class="field">Size <input type="range" min="2" max="150" step="1" data-accessory-editor-target="size" data-action="input->accessory-editor#resize"></label>
+    <label class="field">Turn <input type="range" min="-180" max="180" step="1" data-accessory-editor-target="turn" data-action="input->accessory-editor#rotate"></label>
+    <div class="row">
+      <button type="button" class="btn btn--dark btn--sm" data-action="accessory-editor#done">Done</button>
+      <button type="button" class="link-btn" data-action="accessory-editor#unplace">Remove from this photo</button>
+      <span class="small faint" data-accessory-editor-target="status"></span>
+    </div>
+  </div>
+</section>

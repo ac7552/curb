@@ -4,5 +4,6 @@
   <% next unless placement && accessory.image.attached? %>
   <%= image_tag url_for(accessory.image), alt: accessory.title, draggable: false,
                 class: [ "spin__overlay", ("is-knocked-out" if accessory.remove_background) ],
+                data: { accessory_id: accessory.id, placement_id: placement.id },
                 style: "left: #{placement.x * 100}%; top: #{placement.y * 100}%; width: #{placement.width * 100}%; --turn: #{placement.rotation}deg" %>
 <% end %>

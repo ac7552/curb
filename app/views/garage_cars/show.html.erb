@@ -6,6 +6,7 @@
     <%= link_to "Edit", edit_garage_car_path(@car), class: "btn btn--ghost btn--sm" %>
   </div>
 
+  <div data-controller="accessory-editor" data-action="spin:turned->accessory-editor#turned">
   <section class="section--tight" aria-label="360° view">
     <% if @photos.any? %>
       <div class="spin" data-controller="spin" data-spin-frames-value="<%= @photos.size %>" tabindex="0"
@@ -13,7 +14,7 @@
            data-action="pointerdown->spin#grab keydown->spin#key">
         <% @photos.each_with_index do |photo, index| %>
           <figure class="spin__frame <%= "is-on" if index.zero? %>" data-spin-target="frame" data-photo-id="<%= photo.id %>">
-            <%= image_tag url_for(photo), alt: "", draggable: false, loading: index.zero? ? "eager" : "lazy", decoding: "async" %>
+            <%= image_tag url_for(photo), alt: "", draggable: false, decoding: "async" %>
             <%= render "garage_cars/overlays", accessories: @accessories, photo: %>
           </figure>
         <% end %>
@@ -55,4 +56,5 @@
   <% end %>
 
   <%= render "garage_cars/accessories", car: @car, accessories: @accessories, photos: @photos %>
+  </div>
 </main>

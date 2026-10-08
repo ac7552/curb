@@ -3,28 +3,31 @@
     <%= render "shared/logo" %><span class="brand__word">curb</span>
   <% end %>
 
-  <div class="nav__links">
-    <% if authenticated? %>
+  <% if authenticated? %>
+    <%# The tabs scroll sideways when they don't fit; the account menu stays outside them so it's never cut off. %>
+    <div class="nav__links">
       <%= nav_link "New check", new_report_path, dot: "dot-orange" %>
       <%= nav_link "Your checks", reports_path, dot: "dot-blue" %>
       <%= nav_link "Models", model_profile_path, dot: "dot-green" %>
       <%= nav_link "My Garage", garage_cars_path, dot: "dot-orange" %>
-      <span class="nav__divider" aria-hidden="true"></span>
-      <details class="menu">
-        <summary class="avatar" aria-label="Account"><%= Current.user.initial %></summary>
-        <div class="menu__panel">
-          <p><%= Current.user.name || Current.user.email_address %><%= " · #{Current.user.plan_details.name}" if Billing.enabled? %></p>
-          <%= link_to "Account", account_path %>
-          <%= link_to "Admin", admin_root_path if Current.user.admin? %>
-          <%= link_to(Current.user.paid? ? "Plans" : "Get Plus", plans_path) if Billing.enabled? %>
-          <%= link_to "About Curb", about_path %>
-          <%= button_to "Sign out", session_path, method: :delete %>
-        </div>
-      </details>
-    <% else %>
+    </div>
+    <span class="nav__divider" aria-hidden="true"></span>
+    <details class="menu">
+      <summary class="avatar" aria-label="Account"><%= Current.user.initial %></summary>
+      <div class="menu__panel">
+        <p><%= Current.user.name || Current.user.email_address %><%= " · #{Current.user.plan_details.name}" if Billing.enabled? %></p>
+        <%= link_to "Account", account_path %>
+        <%= link_to "Admin", admin_root_path if Current.user.admin? %>
+        <%= link_to(Current.user.paid? ? "Plans" : "Get Plus", plans_path) if Billing.enabled? %>
+        <%= link_to "About Curb", about_path %>
+        <%= button_to "Sign out", session_path, method: :delete %>
+      </div>
+    </details>
+  <% else %>
+    <div class="nav__links">
       <%= link_to "About", about_path, class: "nav__link" %>
       <%= link_to "Sign in", new_session_path, class: "nav__link" %>
       <%= link_to "Get started", new_registration_path, class: "btn btn--dark btn--sm" %>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 </nav>

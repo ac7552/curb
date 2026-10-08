@@ -14,9 +14,12 @@ class GarageAccessory < ApplicationRecord
   validates :price, length: { maximum: 40 }
   validate :image_is_a_picture
 
-  def store = URI.parse(url).host.to_s.delete_prefix("www.")
+  # The shop's name from the link: "amazon.com".
+  def store
+    URI.parse(url).host.to_s.delete_prefix("www.")
   rescue URI::InvalidURIError
     ""
+  end
 
   private
     def image_is_a_picture
