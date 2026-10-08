@@ -43,3 +43,16 @@ module Claude
     define_singleton_method(:api_key, original)
   end
 end
+
+# Runs the block with plans and payments switched on (or off), whatever CURB_BILLING says.
+module BillingSwitch
+  def with_billing(on = true)
+    original = Rails.configuration.x.billing
+    Rails.configuration.x.billing = on
+    yield
+  ensure
+    Rails.configuration.x.billing = original
+  end
+end
+ActiveSupport::TestCase.include BillingSwitch
+ActionDispatch::IntegrationTest.include BillingSwitch

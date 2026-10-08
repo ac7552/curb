@@ -28,20 +28,22 @@ class BillingTest < ActionDispatch::IntegrationTest
   end
 
   test "sends someone to Stripe Checkout, making their Stripe customer once" do
-    with_stripe do
-      customers = stub_request(:post, "https://api.stripe.com/v1/customers").to_return(stripe_json(id: "cus_1", object: "customer"))
-      checkout = stub_request(:post, "https://api.stripe.com/v1/checkout/sessions")
-        .with(body: hash_including("mode" => "subscription", "customer" => "cus_1", "line_items" => [ { "price" => "price_plus_year", "quantity" => "1" } ]))
-        .to_return(stripe_json(id: "cs_1", object: "checkout.session", url: "https://checkout.stripe.com/c/pay/cs_1"))
-      sign_in_as users(:one)
+    with_billing do
+      with_stripe do
+        customers = stub_request(:post, "https://api.stripe.com/v1/customers").to_return(stripe_json(id: "cus_1", object: "customer"))
+        checkout = stub_request(:post, "https://api.stripe.com/v1/checkout/sessions")
+          .with(body: hash_including("mode" => "subscription", "customer" => "cus_1", "line_items" => [ { "price" => "price_plus_year", "quantity" => "1" } ]))
+          .to_return(stripe_json(id: "cs_1", object: "checkout.session", url: "https://checkout.stripe.com/c/pay/cs_1"))
+        sign_in_as users(:one)
 
-      post subscription_path(plan: "plus", interval: "year")
-      post subscription_path(plan: "plus", interval: "year")
+        post subscription_path(plan: "plus", interval: "year")
+        post subscription_path(plan: "plus", interval: "year")
 
-      assert_redirected_to "https://checkout.stripe.com/c/pay/cs_1"
-      assert_requested customers, times: 1
-      assert_requested checkout, times: 2
-      assert_equal "cus_1", users(:one).reload.stripe_customer_id
+        assert_redirected_to "https://checkout.stripe.com/c/pay/cs_1"
+        assert_requested customers, times: 1
+        assert_requested checkout, times: 2
+        assert_equal "cus_1", users(:one).reload.stripe_customer_id
+      end
     end
   end
 

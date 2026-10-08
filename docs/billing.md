@@ -1,5 +1,9 @@
 # Billing
 
+**Billing is switched off** until Stripe is ready: no Plans page, no payment buttons, and no limit on checks (checks
+are still counted). Turn it on by setting `CURB_BILLING: "on"` in `config/deploy.yml` and deploying; on your Mac,
+run the server with `CURB_BILLING=on bin/dev`.
+
 Plans and their limits live in `config/plans.yml`. Payments go through Stripe: Checkout takes the card,
 Stripe's billing portal lets people change or cancel, and a webhook keeps each user's plan in step
 (`app/services/billing.rb`). Until the Stripe keys are set, the upgrade buttons say payments aren't on yet.

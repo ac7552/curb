@@ -1,5 +1,6 @@
 # Sends someone to Stripe to start a paid plan, or to Stripe's billing portal to change or cancel it.
 class SubscriptionsController < ApplicationController
+  before_action { head :not_found unless Billing.enabled? }
   rate_limit to: 10, within: 1.minute, with: -> { redirect_to plans_path, alert: "Try again in a minute." }
 
   def create

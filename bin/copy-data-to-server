@@ -17,14 +17,16 @@ dump="tmp/curb-data.dump"
 echo "Dumping ${source_db} (without accounts, reports or migration records)..."
 pg_dump --format=custom --no-owner --no-privileges \
   --exclude-table=users --exclude-table=sessions --exclude-table=reports --exclude-table=usage_events \
+  --exclude-table=users_id_seq --exclude-table=sessions_id_seq --exclude-table=reports_id_seq --exclude-table=usage_events_id_seq \
   --exclude-table=schema_migrations --exclude-table=ar_internal_metadata \
   --file="${dump}" "${source_db}"
 ls -lh "${dump}"
 
 echo "Sending it to ${server} and restoring into curb_app_production..."
-# Keep-alives notice a dropped connection within a few minutes, instead of waiting on it forever.
+# Keep-alives notice a dropped connection within a few minutes, instead of waiting on it forever. One transaction:
+# if anything fails, the server keeps the data it had rather than a half-replaced copy.
 ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=6 "root@${server}" "docker exec -i curb-db pg_restore --username=curb --dbname=curb_app_production \
-  --clean --if-exists --no-owner --no-privileges --exit-on-error" < "${dump}"
+  --clean --if-exists --no-owner --no-privileges --single-transaction" < "${dump}"
 
 rm -f "${dump}"
 echo "Done. Check the site, then: bin/kamal app exec 'bin/rails runner \"puts Vehicle.count\"'"

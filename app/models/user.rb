@@ -34,8 +34,9 @@ class User < ApplicationRecord
 
   def used_this_month(kind) = usage_events.this_month.where(kind: kind.to_s).count
 
-  # How many are left this month; nil when the plan has no limit.
+  # How many are left this month; nil when there's no limit (the plan has none, or billing is switched off).
   def remaining(kind)
+    return unless Billing.enabled?
     limit = plan_details.limit(kind) or return
     [ limit - used_this_month(kind), 0 ].max
   end

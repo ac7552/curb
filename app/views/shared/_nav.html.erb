@@ -12,9 +12,9 @@
       <details class="menu">
         <summary class="avatar" aria-label="Account"><%= Current.user.initial %></summary>
         <div class="menu__panel">
-          <p><%= Current.user.name || Current.user.email_address %> · <%= Current.user.plan_details.name %></p>
+          <p><%= Current.user.name || Current.user.email_address %><%= " · #{Current.user.plan_details.name}" if Billing.enabled? %></p>
           <%= link_to "Account", account_path %>
-          <%= link_to(Current.user.paid? ? "Plans" : "Get Plus", plans_path) %>
+          <%= link_to(Current.user.paid? ? "Plans" : "Get Plus", plans_path) if Billing.enabled? %>
           <%= link_to "About Curb", about_path %>
           <%= button_to "Sign out", session_path, method: :delete %>
         </div>

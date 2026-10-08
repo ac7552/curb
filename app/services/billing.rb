@@ -13,6 +13,9 @@ module Billing
 
   module_function
 
+  # Whether plans and payments are switched on (config/initializers/features.rb).
+  def enabled? = Rails.configuration.x.billing
+
   def secret_key = ENV["STRIPE_SECRET_KEY"].presence || Rails.application.credentials.dig(:stripe, :secret_key)
   def webhook_secret = ENV["STRIPE_WEBHOOK_SECRET"].presence || Rails.application.credentials.dig(:stripe, :webhook_secret)
 

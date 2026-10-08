@@ -3,6 +3,7 @@
   <p class="eyebrow"><%= @user.email_address %></p>
   <h1 class="display display--md">Your account</h1>
 
+  <% if Billing.enabled? %>
   <section class="section account__plan" aria-labelledby="plan-heading">
     <h2 class="eyebrow about__head" id="plan-heading">Plan</h2>
     <div class="account__plan-row">
@@ -21,6 +22,7 @@
       <% end %>
     </div>
   </section>
+  <% end %>
 
   <section class="section" aria-labelledby="details-heading">
     <h2 class="eyebrow about__head" id="details-heading">Your details</h2>

@@ -54,6 +54,6 @@
 
   <footer class="footer">
     <span>© <%= Date.current.year %> Curb</span>
-    <span>Best guesses from real inspection records, not promises. <%= link_to "Where our numbers come from", about_path %> · <%= link_to "Plans", plans_path %></span>
+    <span>Best guesses from real inspection records, not promises. <%= link_to "Where our numbers come from", about_path %><% if Billing.enabled? %> · <%= link_to "Plans", plans_path %><% end %></span>
   </footer>
 </main>
