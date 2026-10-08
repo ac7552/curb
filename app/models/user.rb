@@ -6,6 +6,9 @@ class User < ApplicationRecord
   has_many :reports, dependent: :destroy
   has_many :usage_events, dependent: :delete_all
   has_many :garage_cars, dependent: :destroy
+  has_many :forum_threads, dependent: :destroy
+  has_many :forum_posts, dependent: :destroy
+  has_many :forum_reports, foreign_key: :reporter_id, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :first_name, :last_name, with: ->(name) { name.squish }
@@ -23,6 +26,22 @@ class User < ApplicationRecord
   validate :known_car_types
 
   def name = [ first_name, last_name ].compact_blank.join(" ").presence
+  # How they appear in Our Garage: first name and last initial, never their full name or email.
+  def forum_name = first_name.present? ? [ first_name, last_name.to_s.first.presence&.then { "#{_1}." } ].compact.join(" ") : "Member"
+  def banned? = banned_at.present?
+  def can_post? = !banned? && first_name.present? && last_name.present?
+
+  # Stops them posting in Our Garage and hides everything they've posted there.
+  def ban!
+    now = Time.current
+    transaction do
+      update_column(:banned_at, now)
+      forum_threads.where(hidden_at: nil).update_all(hidden_at: now)
+      forum_posts.where(hidden_at: nil).update_all(hidden_at: now)
+    end
+  end
+
+  def unban! = update_column(:banned_at, nil)
   def initial = (first_name.presence || email_address).first.upcase
 
   # The shop-rate region their postcode is in, when we can tell.

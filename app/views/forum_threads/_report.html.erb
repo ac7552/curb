@@ -1,0 +1,11 @@
+<details class="forum__report">
+  <summary class="small faint">Report</summary>
+  <%= form_with url: forum_reports_path, class: "forum__report-form" do |form| %>
+    <%= hidden_field_tag :reportable_type, reportable.class.name %>
+    <%= hidden_field_tag :reportable_id, reportable.id %>
+    <% ForumReport::REASONS.each_with_index do |(value, label), index| %>
+      <label class="small"><%= radio_button_tag :reason, value, index.zero?, id: "reason-#{reportable.class.name}-#{reportable.id}-#{value}" %> <%= label %></label>
+    <% end %>
+    <%= form.submit "Send to a moderator", class: "btn btn--ghost btn--sm" %>
+  <% end %>
+</details>

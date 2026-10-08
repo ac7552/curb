@@ -7,6 +7,7 @@
     <div class="stat"><span class="stat__label">Users</span><span class="stat__value"><%= number_with_delimiter(@users) %></span><span class="stat__note"><%= @new_users %> new this week</span></div>
     <div class="stat"><span class="stat__label">Checks today</span><span class="stat__value"><%= number_with_delimiter(@checks_today) %></span><span class="stat__note"><%= @checks_week %> in the last 7 days</span></div>
     <div class="stat"><span class="stat__label">Open errors</span><span class="stat__value"><%= @open_errors %></span><span class="stat__note"><%= link_to "See errors", admin_errors_path %></span></div>
+    <div class="stat"><span class="stat__label">Open reports</span><span class="stat__value"><%= @open_reports %></span><span class="stat__note"><%= link_to "Our Garage reports", admin_reports_path %></span></div>
     <div class="stat"><span class="stat__label">Plans and payments</span><span class="stat__value"><%= Billing.enabled? ? "On" : "Off" %></span><span class="stat__note"><%= link_to "Features", admin_features_path %></span></div>
   </section>
 

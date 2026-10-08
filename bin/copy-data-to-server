@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Copies Curb's data tables (MOT inspections, recalls, bulletins, maintenance guides, rate tables) from this machine's
-# development database to the production database on the server. Accounts, sign-ins, saved reports, plan usage, feature switches and the error log are left out
-# of the copy entirely, so the server's own users and reports are never touched (and this machine's demo login never
-# reaches the live site). Migration records stay the server's own too.
+# development database to the production database on the server. Everything people make on the live site is left
+# out entirely: accounts, sign-ins, saved reports, plan usage, garages and their photos, Our Garage threads, plus
+# feature switches and the error log. So the server's own users and their content are never touched, and this
+# machine's demo login never reaches the live site. Migration records stay the server's own too.
 #
 # Usage: bin/copy-data-to-server (CURB_SERVER=<ip> to copy to a different server)
 # Deploy first (`bin/kamal setup` or `bin/kamal deploy`) so the server has the same migrations as this machine. The
@@ -19,6 +20,7 @@ pg_dump --format=custom --no-owner --no-privileges \
   --exclude-table=users --exclude-table=sessions --exclude-table=reports --exclude-table=usage_events \
   --exclude-table=users_id_seq --exclude-table=sessions_id_seq --exclude-table=reports_id_seq --exclude-table=usage_events_id_seq \
   --exclude-table=feature_flags --exclude-table=feature_flags_id_seq --exclude-table=error_events --exclude-table=error_events_id_seq \
+  --exclude-table=garage_cars --exclude-table=garage_cars_id_seq --exclude-table=garage_accessories --exclude-table=garage_accessories_id_seq --exclude-table=accessory_placements --exclude-table=accessory_placements_id_seq --exclude-table=forum_threads --exclude-table=forum_threads_id_seq --exclude-table=forum_posts --exclude-table=forum_posts_id_seq --exclude-table=forum_reports --exclude-table=forum_reports_id_seq --exclude-table=active_storage_blobs --exclude-table=active_storage_blobs_id_seq --exclude-table=active_storage_attachments --exclude-table=active_storage_attachments_id_seq --exclude-table=active_storage_variant_records --exclude-table=active_storage_variant_records_id_seq \
   --exclude-table=schema_migrations --exclude-table=ar_internal_metadata \
   --file="${dump}" "${source_db}"
 ls -lh "${dump}"

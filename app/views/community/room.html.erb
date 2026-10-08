@@ -1,0 +1,35 @@
+<% content_for :title, "#{@room.title} · Our Garage" %>
+<main class="page forum">
+  <%= render "community/tabs", make_key: @room.make_key %>
+  <h1 class="display display--md"><%= @room.title %></h1>
+
+  <section class="section--tight">
+    <% if @threads.any? %>
+      <%= render "community/threads", threads: @threads %>
+      <% if @more || @page > 1 %>
+        <div class="row section--tight">
+          <%= link_to "Newer", community_room_path(@room.make_slug, @room.model_slug, page: @page - 1), class: "btn btn--ghost btn--sm" if @page > 1 %>
+          <%= link_to "Older", community_room_path(@room.make_slug, @room.model_slug, page: @page + 1), class: "btn btn--ghost btn--sm" if @more %>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="muted">No one's started a thread about the <%= @room.title %> yet. Be the first.</p>
+    <% end %>
+  </section>
+
+  <section class="section" id="new-thread">
+    <h2 class="eyebrow about__head">Start a thread</h2>
+    <% if Current.user.banned? %>
+      <p class="muted">Your account can't post in Our Garage.</p>
+    <% elsif !Current.user.can_post? %>
+      <p class="muted"><%= link_to "Add your first and last name", account_path %> to post. Others see your first name and last initial.</p>
+    <% else %>
+      <%= form_with model: @thread, url: community_room_threads_path(@room.make_slug, @room.model_slug), class: "form form--tight forum__form" do |form| %>
+        <div class="field"><%= form.label :title %><%= form.text_field :title, required: true, maxlength: 120, class: "input" %></div>
+        <div class="field"><%= form.label :body, "What's on your mind?" %><%= form.text_area :body, required: true, maxlength: 10_000, rows: 6, class: "input forum__textarea" %></div>
+        <p class="small faint">Posting as <strong><%= Current.user.forum_name %></strong> · be kind, and keep personal details out of it</p>
+        <div><%= form.submit "Post", class: "btn btn--dark" %></div>
+      <% end %>
+    <% end %>
+  </section>
+</main>

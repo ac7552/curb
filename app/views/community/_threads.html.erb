@@ -1,0 +1,13 @@
+<ul class="forum__threads">
+  <% threads.each do |thread| %>
+    <li>
+      <%= link_to forum_thread_path(thread), class: "forum__thread" do %>
+        <span class="forum__thread-title"><%= thread.title %></span>
+        <span class="small faint">
+          <% if local_assigns[:show_room] %><%= thread.room.title %> · <% end %><%= thread.user.forum_name %> ·
+          <%= pluralize(thread.forum_posts_count, "reply", plural: "replies") %> · <%= time_ago_in_words(thread.last_posted_at) %> ago
+        </span>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

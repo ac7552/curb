@@ -1,4 +1,18 @@
 class Admin::UsersController < Admin::BaseController
+  def ban
+    user = User.find(params[:id])
+    return redirect_to(admin_users_path, alert: "Admins can't be banned.") if user.admin?
+    user.ban!
+    redirect_to admin_users_path(q: params[:q]), notice: "#{user.email_address} can't post in Our Garage anymore, and their posts are hidden."
+  end
+
+  # Lets them post again. Their old posts stay hidden; unhide any by hand from Reports if needed.
+  def unban
+    user = User.find(params[:id])
+    user.unban!
+    redirect_to admin_users_path(q: params[:q]), notice: "#{user.email_address} can post again."
+  end
+
   LIMIT = 200
 
   def index

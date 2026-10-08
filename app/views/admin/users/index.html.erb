@@ -11,7 +11,7 @@
 
   <div class="table-wrap section--tight">
     <table class="table">
-      <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Last seen</th><th class="n">Checks this month</th><th class="n">Saved checks</th><th>Plan</th></tr></thead>
+      <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Last seen</th><th class="n">Checks this month</th><th class="n">Saved checks</th><th>Plan</th><th>Our Garage</th></tr></thead>
       <tbody>
         <% @users.each do |user| %>
           <tr>
@@ -22,6 +22,13 @@
             <td class="n"><%= @checks_this_month.fetch(user.id, 0) %></td>
             <td class="n"><%= @saved_checks.fetch(user.id, 0) %></td>
             <td><%= user.plan_details.name %></td>
+            <td>
+              <% if user.banned? %>
+                <%= button_to "Unban", unban_admin_user_path(user, q: @query), class: "link-btn" %>
+              <% elsif !user.admin? %>
+                <%= button_to "Ban", ban_admin_user_path(user, q: @query), class: "link-btn", form: { data: { turbo_confirm: "Ban #{user.email_address} from posting, and hide everything they've posted?" } } %>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>

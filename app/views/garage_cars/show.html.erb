@@ -56,5 +56,11 @@
   <% end %>
 
   <%= render "garage_cars/accessories", car: @car, accessories: @accessories, photos: @photos %>
+
+  <% room = ForumRoom.for(@car) %>
+  <section class="section garage__room">
+    <h2 class="eyebrow about__head">Our Garage</h2>
+    <p><%= link_to "Talk with other #{room.title} owners →", community_room_path(room.make_slug, room.model_slug) %></p>
+  </section>
   </div>
 </main>

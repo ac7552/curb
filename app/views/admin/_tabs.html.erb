@@ -1,6 +1,6 @@
 <p class="eyebrow">Admin</p>
 <nav class="chips admin__tabs" aria-label="Admin">
-  <% { "Overview" => admin_root_path, "Users" => admin_users_path, "Errors" => admin_errors_path, "Features" => admin_features_path }.each do |label, path| %>
+  <% { "Overview" => admin_root_path, "Users" => admin_users_path, "Errors" => admin_errors_path, "Reports" => admin_reports_path, "Features" => admin_features_path }.each do |label, path| %>
     <%= link_to label, path, class: [ "chip", "chip--link", ("is-on" if current_page?(path)) ], aria: { current: (current_page?(path) ? "page" : nil) } %>
   <% end %>
 </nav>

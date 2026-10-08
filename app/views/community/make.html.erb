@@ -1,0 +1,25 @@
+<% name = VehicleName.display_make(@make_key) %>
+<% content_for :title, "#{name} · Our Garage" %>
+<main class="page forum">
+  <%= render "community/tabs" %>
+  <h1 class="display display--md"><%= name %></h1>
+
+  <section class="section--tight">
+    <h2 class="eyebrow about__head">Models</h2>
+    <div class="chips">
+      <% @rooms.each do |room| %>
+        <% count = room.same_model_keys.sum { @thread_counts.fetch(_1, 0) } %>
+        <%= link_to community_room_path(room.make_slug, room.model_slug), class: "chip chip--link" do %><%= room.model_name %><% if count.positive? %> · <%= count %><% end %><% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="eyebrow about__head">Latest in <%= name %></h2>
+    <% if @latest.any? %>
+      <%= render "community/threads", threads: @latest, show_room: true %>
+    <% else %>
+      <p class="muted">No threads yet. Pick a model and start one.</p>
+    <% end %>
+  </section>
+</main>

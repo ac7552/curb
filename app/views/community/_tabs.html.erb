@@ -1,0 +1,1 @@
+<p class="eyebrow"><%= link_to "Our Garage", community_path %><% if local_assigns[:make_key] %> · <%= link_to VehicleName.display_make(make_key), community_make_path(ForumRoom.slug(make_key)) %><% end %><% if local_assigns[:room] %> · <%= link_to room.model_name, community_room_path(room.make_slug, room.model_slug) %><% end %></p>

@@ -1,0 +1,28 @@
+<% content_for :title, "Reports · Admin" %>
+<main class="page admin">
+  <%= render "admin/tabs" %>
+  <h1 class="display display--md">Reports</h1>
+  <p class="muted">Threads and replies people flagged in Our Garage.</p>
+
+  <% if @reports.any? %>
+    <ul class="about__list section--tight">
+      <% @reports.each do |report| %>
+        <% content = report.reportable %>
+        <% thread = content.is_a?(ForumThread) ? content : content.thread %>
+        <li class="admin__report">
+          <p class="small faint"><%= ForumReport::REASONS[report.reason] %> · reported by <%= report.reporter.email_address %> · <%= time_ago_in_words(report.created_at) %> ago</p>
+          <p><strong><%= content.user.forum_name %></strong> (<%= content.user.email_address %>) in <%= link_to thread.title, forum_thread_path(thread) %><%= " · already hidden" if content.hidden? %></p>
+          <blockquote class="admin__quote"><%= simple_format(h(content.is_a?(ForumThread) ? "#{content.title}\n\n#{content.body}" : content.body).truncate(600)) %></blockquote>
+          <div class="row">
+            <%= button_to "Hide it", admin_report_path(report, decision: "hide"), method: :patch, class: "btn btn--dark btn--sm" %>
+            <%= button_to "Dismiss", admin_report_path(report, decision: "dismiss"), method: :patch, class: "btn btn--ghost btn--sm" %>
+            <%= button_to "Ban the author", admin_report_path(report, decision: "ban"), method: :patch, class: "link-btn",
+                          form: { data: { turbo_confirm: "Ban #{content.user.email_address} from posting, and hide everything they've posted?" } } unless content.user.admin? %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="muted section--tight">Nothing to look at.</p>
+  <% end %>
+</main>

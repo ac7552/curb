@@ -1,0 +1,40 @@
+<% content_for :title, "#{@thread.title} · Our Garage" %>
+<main class="page page--form forum">
+  <%= render "community/tabs", make_key: @thread.make_key, room: @thread.room %>
+  <% if @thread.hidden? %><p class="errors">Hidden by a moderator. Only admins can see this thread.</p><% end %>
+
+  <article class="forum__post forum__post--first">
+    <h1 class="display display--sm"><%= @thread.title %></h1>
+    <p class="small faint"><%= @thread.user.forum_name %> · <%= time_ago_in_words(@thread.created_at) %> ago</p>
+    <div class="forum__body"><%= simple_format(h(@thread.body)) %></div>
+    <%= render "forum_threads/report", reportable: @thread unless @thread.user == Current.user %>
+  </article>
+
+  <section class="section--tight" aria-label="Replies">
+    <% @posts.each do |post| %>
+      <article class="forum__post" id="post-<%= post.id %>">
+        <% if post.hidden? && !Current.user.admin? %>
+          <p class="small faint">Removed by a moderator.</p>
+        <% else %>
+          <p class="small faint"><%= post.user.forum_name %> · <%= time_ago_in_words(post.created_at) %> ago<%= " · hidden" if post.hidden? %></p>
+          <div class="forum__body"><%= simple_format(h(post.body)) %></div>
+          <%= render "forum_threads/report", reportable: post unless post.user == Current.user %>
+        <% end %>
+      </article>
+    <% end %>
+  </section>
+
+  <section class="section" id="reply">
+    <% if Current.user.banned? %>
+      <p class="muted">Your account can't post in Our Garage.</p>
+    <% elsif !Current.user.can_post? %>
+      <p class="muted"><%= link_to "Add your first and last name", account_path %> to reply. Others see your first name and last initial.</p>
+    <% else %>
+      <%= form_with model: @post, url: forum_thread_posts_path(@thread), class: "form form--tight forum__form" do |form| %>
+        <div class="field"><%= form.label :body, "Reply" %><%= form.text_area :body, required: true, maxlength: 5_000, rows: 4, class: "input forum__textarea" %></div>
+        <p class="small faint">Posting as <strong><%= Current.user.forum_name %></strong></p>
+        <div><%= form.submit "Reply", class: "btn btn--dark" %></div>
+      <% end %>
+    <% end %>
+  </section>
+</main>

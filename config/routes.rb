@@ -21,6 +21,16 @@ Rails.application.routes.draw do
       resources :placements, only: %i[create update destroy], controller: "accessory_placements"
     end
   end
+  # Our Garage
+  get "community", to: "community#index", as: :community
+  resources :forum_threads, path: "community/threads", only: :show do
+    resources :posts, only: :create, controller: "forum_posts"
+  end
+  resources :forum_reports, path: "community/reports", only: :create
+  get "community/:make", to: "community#make", as: :community_make
+  get "community/:make/:model", to: "community#room", as: :community_room
+  post "community/:make/:model/threads", to: "forum_threads#create", as: :community_room_threads
+
   get "r/:token", to: "shared_reports#show", as: :shared_report
   get "vehicle_lookup", to: "vehicle_lookups#show", as: :vehicle_lookup
   get "vehicle_lookup/models", to: "vehicle_lookups#models", as: :vehicle_models
@@ -28,7 +38,13 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboard#show"
-    resources :users, only: :index
+    resources :users, only: :index do
+      member do
+        post :ban
+        post :unban
+      end
+    end
+    resources :reports, only: %i[index update]
     resources :errors, only: %i[index show update]
     resources :features, only: %i[index update], param: :key
   end

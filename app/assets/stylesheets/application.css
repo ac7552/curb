@@ -562,6 +562,9 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .admin__backtrace { margin: 0; padding: 16px; overflow-x: auto; background: var(--surface); font: 12px/1.6 var(--font-mono); white-space: pre; }
 .admin__feature { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
 .admin__feature form { flex: none; }
+.admin__report .row { margin-top: 10px; }
+.admin__report form { display: contents; }
+.admin__quote { margin: 10px 0 0; padding: 10px 14px; border-left: 2px solid var(--line-strong); color: var(--ink-2); overflow-wrap: anywhere; }
 
 /* ---------- My Garage ---------- */
 
@@ -613,6 +616,28 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .garage__editor { position: sticky; bottom: 12px; z-index: 5; display: grid; gap: 10px; margin-top: 16px; padding: 16px; border: 1px solid var(--ink); background: var(--bg); }
 .garage__editor .field { grid-template-columns: 48px 1fr; align-items: center; }
 .spin__overlay.is-editing { pointer-events: auto; cursor: move; outline: 1px dashed var(--accent); outline-offset: 2px; touch-action: none; }
+
+/* ---------- Our Garage ---------- */
+
+.forum .display { margin-top: 10px; }
+.forum .lede { margin-top: 12px; }
+.forum__makes { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+.forum__make { display: grid; justify-items: center; gap: 6px; padding: 16px 8px; border: 1px solid var(--line); text-align: center; text-decoration: none; }
+.forum__make:hover { border-color: var(--ink-3); background: var(--surface); }
+.forum__make .make-logo { width: 36px; height: 36px; }
+.forum__threads { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--ink); }
+.forum__thread { display: grid; gap: 4px; padding: 16px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+.forum__thread:hover .forum__thread-title { text-decoration: underline; text-underline-offset: 3px; }
+.forum__thread-title { font: 400 19px/1.3 var(--font-display); letter-spacing: -.01em; }
+.forum__post { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.forum__post--first { border-bottom: 1px solid var(--ink); }
+.forum__post--first .display { margin: 10px 0 6px; }
+.forum__body { margin-top: 10px; line-height: 1.6; overflow-wrap: anywhere; }
+.forum__body p + p { margin-top: 10px; }
+.forum__textarea { min-height: 120px; padding: 12px 14px; resize: vertical; line-height: 1.5; }
+.forum__form { max-width: 720px; }
+.forum__report { margin-top: 10px; }
+.forum__report-form { display: grid; gap: 6px; margin-top: 8px; padding: 12px; background: var(--surface); justify-items: start; }
 
 /* ---------- Report ---------- */
 
