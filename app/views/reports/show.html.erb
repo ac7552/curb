@@ -254,6 +254,8 @@
           </div>
         </details>
 
+        <%= render "reports/insurance", report: @report, shared: @shared %>
+
         <details class="more">
           <summary><span>Every part we checked</span><span class="more__hint"><%= r[:problems].size %> parts</span></summary>
           <div class="more__body">

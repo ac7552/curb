@@ -2,7 +2,7 @@
   "ignored_warnings": [
     {
       "warning_type": "Unmaintained Dependency",
-      "fingerprint": "21ab0fe00fdd5899ffc405cff75aadb91b805ee996a614f7e27b08a287e9062d",
+      "fingerprint": "98b26f60d776fd41ee6f088c833725145be9aac2d7c5b33780241c273622db42",
       "message": "Support for Rails 8.0.5.1 ends on 2026-11-07",
       "file": "Gemfile.lock",
       "note": "Known: upgrade to Rails 8.1 before 2026-11-07. Remove this entry once upgraded."

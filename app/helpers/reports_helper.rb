@@ -1,6 +1,13 @@
 module ReportsHelper
   COUNTRY_LABELS = { "US" => "United States", "GB" => "United Kingdom", "NL" => "Netherlands" }.freeze
 
+  INSURANCE_COVERAGES = {
+    bodily_injury: "Injuries you cause", property_damage: "Damage you cause", pip: "Your own injuries",
+    uninsured: "Drivers with no insurance", collision: "Your car, in a crash", comprehensive: "Your car: theft, weather, fire"
+  }.freeze
+
+  def insurance_coverage_name(coverage) = INSURANCE_COVERAGES.fetch(coverage) { coverage.to_s.humanize }
+
   # Plain names for each kind of warranty, with the dealer's word for it.
   COVERAGE_NAMES = {
     "bumper_to_bumper" => [ "Most parts", "bumper-to-bumper" ],

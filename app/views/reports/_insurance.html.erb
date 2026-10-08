@@ -1,0 +1,28 @@
+<%# A sample insurance price (Report#insurance_estimate). Shown to everyone once the "insurance_estimate" feature is
+    on; until then only admins see it, labelled as a preview. %>
+<% estimate = report.insurance_estimate %>
+<% if estimate && (Feature.enabled?(:insurance_estimate) || (!shared && Current.user&.admin?)) %>
+  <details class="more">
+    <summary><span>Insurance</span><span class="more__hint">About <%= number_to_currency(estimate.total, precision: 0) %> a year</span></summary>
+    <div class="more__body">
+      <% unless Feature.enabled?(:insurance_estimate) %>
+        <p class="callout"><span><strong>Admin preview.</strong> Only admins see this. Turn it on for everyone in Admin → Features.</span></p>
+      <% end %>
+      <p>About <strong><%= number_to_currency(estimate.total, precision: 0) %> a year</strong> (<%= number_to_currency(estimate.monthly, precision: 0) %> a month) for full coverage with a $<%= estimate.options[:deductible] %> deductible, for a 35-year-old driver with a clean record.</p>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Coverage</th><th class="n">Car factor</th><th class="n">A year</th></tr></thead>
+          <tbody>
+            <% estimate.breakdown.each do |coverage, amount| %>
+              <tr><td><%= insurance_coverage_name(coverage) %></td><td class="n"><%= format("%.2f", estimate.vehicle_factor(coverage)) %></td><td class="n"><%= number_to_currency(amount, precision: 0) %></td></tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <p class="small faint">
+        <%= estimate.vehicle_known? ? "Car factors: how this model's insurance claims compare with the average car." : "We don't have insurance claims data for this model yet, so it's priced as an average car." %>
+        Rates are illustrative, not a quote: your price depends on you, where you live and the insurer.
+      </p>
+    </div>
+  </details>
+<% end %>

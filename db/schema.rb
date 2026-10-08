@@ -123,6 +123,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_08_120200) do
     t.index ["vehicle_id"], name: "index_inspections_on_vehicle_id"
   end
 
+  create_table "insurance_loss_indexes", force: :cascade do |t|
+    t.string "make_key", null: false
+    t.string "model_key", null: false
+    t.integer "year_from", null: false
+    t.integer "year_to", null: false
+    t.integer "injury"
+    t.integer "collision"
+    t.integer "theft"
+    t.integer "property_damage"
+    t.string "source", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["make_key", "model_key", "year_from"], name: "idx_on_make_key_model_key_year_from_919b438e1e", unique: true
+  end
+
   create_table "labor_rates", force: :cascade do |t|
     t.string "country", null: false
     t.string "region", null: false

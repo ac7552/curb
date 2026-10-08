@@ -196,4 +196,29 @@ class ReportsTest < ActionDispatch::IntegrationTest
   ensure
     Report.check_cars_exist = false
   end
+
+  test "the insurance estimate is an admin preview until the feature is switched on, and US only" do
+    stub_request(:get, %r{api.nhtsa.gov}).to_return(headers: { "Content-Type" => "application/json" }, body: { results: [] }.to_json)
+    post reports_path, params: report_params(country: "US", region: "National average")
+    report = Report.last
+
+    get report_path(report)
+    assert_select "summary", text: /Insurance/, count: 0
+
+    users(:one).update!(admin: true)
+    get report_path(report)
+    assert_select "summary", text: /Insurance.*About \$1,790 a year/
+    assert_match "Admin preview", response.body
+    assert_match "priced as an average car", response.body
+
+    Feature.set!(:insurance_estimate, true)
+    users(:one).update!(admin: false)
+    get report_path(report)
+    assert_select "summary", text: /Insurance/
+    assert_no_match "Admin preview", response.body
+
+    post reports_path, params: report_params
+    get report_path(Report.last)
+    assert_select "summary", text: /Insurance/, count: 0
+  end
 end

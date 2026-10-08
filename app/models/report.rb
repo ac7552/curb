@@ -63,6 +63,20 @@ class Report < ApplicationRecord
 
   def labor_rate = LaborRate.rate_for(country:, region:, shop_type:)
 
+  # A sample insurance price for this car (Insurance::PremiumCalculator), US only: an average driver (35, clean record,
+  # good credit) with full coverage and a $500 deductible, at the miles this buyer drives. The car's claims indexes
+  # come in when we have them; until then it counts as an average car.
+  STANDARD_DRIVER = { age: 35, accidents: 0, violations: 0, credit_tier: :good, married: false }.freeze
+
+  def insurance_estimate
+    return unless country == "US"
+    index = InsuranceLossIndex.for(make_key:, model_key:, model_year:)
+    Insurance::PremiumCalculator.new(
+      vehicle: { name: title, hldi: index&.to_hldi || {} }, driver: STANDARD_DRIVER,
+      options: { annual_miles: miles_per_year || market.default_miles_per_year }
+    )
+  end
+
   # Recalls confirmed open on this exact car mean the buyer pays nothing for that part. NHTSA's
   # model-level list doesn't say whether a recall is still open on a VIN, so those are only flagged.
   def recall_category_ids

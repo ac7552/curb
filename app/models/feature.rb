@@ -11,6 +11,12 @@ class Feature
                    "are still counted. Needs Stripe set up first (docs/billing.md).",
       # CURB_BILLING sets the default, for a machine with no admin yet.
       default: -> { ActiveModel::Type::Boolean.new.cast(ENV.fetch("CURB_BILLING", "off")) }
+    ),
+    Definition.new(
+      key: "insurance_estimate", name: "Insurance estimate",
+      description: "A sample yearly insurance price in each US report, from the insurance calculator. Its rates are " \
+                   "illustrative and car-specific claims data isn't loaded yet, so it's off; admins see it as a preview.",
+      default: -> { false }
     )
   ].index_by(&:key).freeze
 
