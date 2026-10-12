@@ -65,7 +65,7 @@ gem "activerecord-import", "~> 2.1"
 gem "faraday", "~> 2.12"
 gem "faraday-retry", "~> 2.2"
 # Sorting defect phrases into categories, and reading maintenance guides the rules can't
-gem "anthropic", "~> 1.23"
+gem "anthropic", "~> 1.77"
 # Plus subscriptions: checkout, the billing portal and webhooks [https://docs.stripe.com/api?lang=ruby]
 gem "stripe", "~> 15.0"
 
