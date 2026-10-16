@@ -70,7 +70,7 @@ gem "anthropic", "~> 1.23"
 gem "stripe", "~> 15.0"
 
 group :test do
-  gem "webmock", "~> 3.24"
+  gem "webmock", "~> 3.30"
 end
 
 # json 3.x drops the quirks_mode option that ActiveSupport 8.0 still passes
