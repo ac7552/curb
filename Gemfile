@@ -74,7 +74,7 @@ group :test do
 end
 
 # json 3.x drops the quirks_mode option that ActiveSupport 8.0 still passes
-gem "json", "~> 2.10"
+gem "json", "~> 3.1"
 
 # Reading and writing MOT files; not a default gem from Ruby 3.4
 gem "csv", "~> 3.3"
