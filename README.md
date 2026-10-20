@@ -122,6 +122,11 @@ Rails credentials (`anthropic_api_key`, `mot: { client_id: ... }`).
 The reference tables are starter values. Check warranty terms against manufacturer sites and replace
 repair costs with CarMD or HaynesPro figures before launch.
 
+## Roadmap
+
+What's planned next — real reference data, confidence calibration, turning on billing, and more — is in
+[`ROADMAP.md`](ROADMAP.md).
+
 ## Tests
 
 ```bash
