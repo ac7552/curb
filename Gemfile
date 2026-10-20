@@ -62,7 +62,7 @@ gem "scenic", "~> 1.8"
 # Small-batch inserts (recalls, reference data)
 gem "activerecord-import", "~> 2.1"
 # HTTP clients for NHTSA, RDW and the MOT History API
-gem "faraday", "~> 2.12"
+gem "faraday", "~> 2.15"
 gem "faraday-retry", "~> 2.2"
 # Sorting defect phrases into categories, and reading maintenance guides the rules can't
 gem "anthropic", "~> 1.23"
