@@ -20,6 +20,7 @@ In recommended build order. Nothing below is built yet; a few items note existin
 | 5 | Negotiation one-pager | High | Medium | `model_profile`, `recall`, `claude.rb` |
 | 6 | Fair-price check | High | Medium–High | `vehicle_lookup`, `report` |
 | 7 | Pre-purchase inspection checklist | Medium–High | Low–Medium | `model_profile` |
+| 8 | "Where it breaks" picture of the car | High | Medium | `model_part_profile`, `defect_category` |
 
 ---
 
@@ -103,3 +104,18 @@ lot into the inspection bay.
 
 **One action:** tap "Checklist for my mechanic." **One verdict:** a printable "please check these"
 list, each item with a one-line reason.
+
+### 8. "Where it breaks" picture of the car
+A simple drawing of the car — side and top view — with its trouble spots lit up for that exact model.
+No photo needed: it's built straight from the data curb already has (`model_part_profile`,
+`owner_reports`, `bulletin_theme`), mapped onto body zones (engine, gearbox, suspension, brakes,
+electrics, body) through the `defect_category` curb already sorts every fault into. Tap a glowing spot
+and it says, in plain words, what tends to go wrong, when, and what it costs:
+
+> *"Timing chain — tends to go around **70,000 miles**. Costs about **$1,800**. Ask your mechanic to
+> check it."*
+
+Because it's drawn from data, not photos, it works the instant you look up a car — on the lot or at
+home — and looks the same for every model. It turns curb's "known weak spots" from a list into something
+a kid could read at a glance. **One action:** look up a car. **One verdict:** a picture of the car with
+the weak spots glowing, a plain sentence on each.
