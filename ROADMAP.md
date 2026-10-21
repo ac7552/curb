@@ -1,130 +1,105 @@
 # Curb Roadmap
 
-Curb already turns inspection data into a true cost of ownership. The next phase makes it the tool a
-buyer actually pulls out on the lot: it should tell you what the car will *net* cost, whether this one
-is a good deal, what to say to knock the price down, and whether the warranty is worth it — all from
-data no listing site puts together.
+Curb already turns inspection data into a true cost of owning a used car. This next phase answers the
+questions a buyer actually has on the lot: *What will it really cost me? Is this a good price? Is the
+warranty worth it — and does it even still cover this car?*
 
-Grouped by theme and in rough build order. Statuses are honest: the headline features below are not
-built yet; a few items note existing scaffolding they build on.
+**Design bar for every feature:** so simple a 4th–5th grader could use it. That means **one obvious
+action** (paste a link, snap a photo) and **one plain-English verdict** (a ✅ / ⚠️ / ❌ and a single
+sentence that says why) — never a table of numbers or a word like "depreciation" or "deductible" without
+plain words around it.
 
-## A. Complete the "true cost" promise
+In recommended build order. Nothing below is built yet; a few items note existing code they build on.
 
-| # | Feature | Value | Effort | Status |
-|---|---------|-------|--------|--------|
-| 1 | Depreciation & resale forecast → real *net* cost | High | Medium–High | Planned |
-| 2 | Side-by-side car comparison | High | Medium | Planned |
-| 3 | "Should I buy the warranty?" expected-value engine | High | Medium | Builds on `coverage.rb` |
-| 4 | Fuel / energy & EV battery-degradation modeling | Medium–High | Medium | Planned |
-
-## B. The on-the-lot superpowers
-
-| # | Feature | Value | Effort | Status |
-|---|---------|-------|--------|--------|
-| 5 | Negotiation one-pager (data → leverage) | High | Medium | Planned |
-| 6 | Photo condition scan from the lot | High | High | Reuses garage photo infra |
-| 7 | Fair-price check vs. the market | High | Medium–High | Planned |
-| 8 | Tailored pre-purchase inspection checklist | Medium | Low–Medium | Builds on `ModelProfile` |
-
-## C. Reach & growth
-
-| # | Feature | Value | Effort | Status |
-|---|---------|-------|--------|--------|
-| 9 | Watchlist + recall / bulletin alerts | Medium–High | Medium | Planned |
-| 10 | Public shared reports + embeddable "true cost" badge | Medium | Medium | `shared_reports` scaffolded |
-| 11 | New regions: Germany (TÜV), then France | Medium | High | Planned |
-
-## D. Foundations (make every number defensible)
-
-| # | Feature | Value | Effort | Status |
-|---|---------|-------|--------|--------|
-| 12 | Real reference data (CarMD/HaynesPro costs, verified warranties) | High | Medium | Planned |
-| 13 | Confidence calibration + accuracy back-test harness | High | Medium–High | Planned |
-| 14 | Turn on billing | High | Medium | Built, switched off |
+| # | Feature | Value | Effort | Builds on |
+|---|---------|-------|--------|-----------|
+| 1 | Depreciation & net cost | High | Medium–High | `true_cost/calculator.rb` |
+| 2 | Side-by-side comparison | High | Medium | `reports_controller`, `report` |
+| 3 | Warranty scan & live coverage check | High | Medium | `maintenance_guides/`, `coverage.rb` |
+| 4 | "Should I buy the warranty?" verdict | High | Medium | `coverage.rb`, `defect_odds.rb` |
+| 5 | Negotiation one-pager | High | Medium | `model_profile`, `recall`, `claude.rb` |
+| 6 | Fair-price check | High | Medium–High | `vehicle_lookup`, `report` |
+| 7 | Pre-purchase inspection checklist | Medium–High | Low–Medium | `model_profile` |
 
 ---
 
-### 1. Depreciation & resale forecast → real *net* cost
-Today true cost = price + repairs + maintenance (`app/models/true_cost/calculator.rb`). That ignores the
-single biggest line item: how much the car is worth when you sell it. Model resale value at the end of
-the holding period (by make/model/age/mileage, with region-specific curves) and report **net cost =
-price − resale + repairs + maintenance**. Add a cost-per-year curve that surfaces the cheapest window
-to buy and to sell. This closes the biggest gap in the headline number and makes every other figure
-more honest.
+### 1. Depreciation & net cost
+Right now true cost = price + repairs + maintenance (`app/models/true_cost/calculator.rb`). That leaves
+out the biggest number of all: what the car is worth when you sell it. Add a resale-value estimate for
+the end of the time the buyer plans to keep it, and show the real figure in plain words:
 
-### 2. Side-by-side car comparison
-A buyer on a lot is choosing *between* cars, not evaluating one in isolation. Let them pin two or three
-reports and compare net cost, break-the-bank risk, known weak spots, recalls and confidence in one
-view. Turns a single verdict into a decision tool — and is the feature most likely to get shared.
+> *"This car will be worth about **$14,000** when you sell it, so it really costs you about **$9,000** to
+> own — not the $23,000 on the windshield."*
 
-### 3. "Should I buy the warranty?" expected-value engine
-Curb already computes what a factory/CPO/extended plan would cover (`coverage.rb`) and each part's
-defect odds (`defect_odds.rb`). Combine them into an explicit expected-value verdict: given *this* car's
-odds, *this* plan's price and terms, and *your* holding period, is the plan +EV or −EV, and by how
-much? Show the distribution, not just a point estimate. Dealers sell these plans at the desk — a
-data-backed "worth it / skip it" is a genuine superpower.
+**One action:** nothing new — it uses the price, mileage and years-to-keep the buyer already enters.
+**One verdict:** the net cost, big, with the sticker price crossed out next to it.
 
-### 4. Fuel / energy & EV battery-degradation modeling
-Running cost is a top-three expense and isn't modeled yet. Add fuel/electricity cost from the car's
-economy and the buyer's annual mileage. For EVs, use inspection and complaint data to estimate battery
-degradation risk and fold expected range loss (and replacement odds) into the true cost — something
-almost no used-car tool does well.
+### 2. Side-by-side comparison
+A buyer on a lot is choosing *between* cars, not grading one. Let them pin two (or three) cars and see
+them next to each other: net cost to own, chance of a big repair, known weak spots, and open recalls —
+each row a plain ✅ / ⚠️ / ❌, with a thumbs-up on the one that's cheaper to own overall.
 
-### 5. Negotiation one-pager (data → leverage)
-Translate the report into leverage the buyer can act on: a printable, phone-friendly one-pager that
-turns weak spots, open recalls, MOT/APK history and the true-cost delta into specific talking points
-("this engine family fails on timing chains around 70k — budget ~$1,800 — ask for $X off"). Use Claude
-(already wired for defect categorizing) to phrase it; every claim links back to the data behind it.
+**One action:** tap "Compare" on a second report.
+**One verdict:** "Car A is the cheaper one to own" + the few reasons why.
 
-### 6. Photo condition scan from the lot
-Curb already stores walk-around photos and places accessories on them (`garage_photos_controller.rb`,
-`accessory_placements_controller.rb`). Reuse that pipeline so a buyer snaps the dash, tires, panel gaps
-and odometer on the lot and Claude vision flags dashboard warning lights, tire wear, mismatched panels
-or an odometer that doesn't fit the car's MOT mileage history — then folds the findings into the
-estimate's confidence. The most "standing in front of the car" feature on the list.
+### 3. Warranty scan & live coverage check
+Dealers wave a warranty as a selling point. Curb should read the actual paper and say what it really
+covers *for this car, today*. The buyer photographs or uploads the warranty (factory booklet, CPO
+certificate, or an extended-plan contract) and curb pulls out the terms, then checks them against the
+car's age and mileage — and against its service history, because many plans are void if scheduled
+maintenance was skipped.
 
-### 7. Fair-price check vs. the market
-Curb says what a car will cost to *own* but not whether the *asking price* is fair. Pull comparable
-listings for the same spec and mileage band, show where this price sits in the distribution, and flag
-over/under-priced. Combined with net cost, this is the "is this a good deal?" answer buyers actually
-come for. (Needs a listings data source — evaluate options as part of the work.)
+> *"✅ Your engine and gearbox are covered until about **March 2027** or **60,000 miles**, whichever
+> comes first."*
+> *"⚠️ Careful — this plan needs a service every year, and we don't see one for 2024. That could cancel
+> the engine cover."*
 
-### 8. Tailored pre-purchase inspection checklist
-Generate a one-page PPI checklist the buyer hands their mechanic, pre-loaded with this exact model's
-known weak spots from `ModelProfile` (UK safety checks, US owner reports, maker bulletins) plus the
-open recalls. Cheap to build on data that already exists, and it extends curb's value past the lot into
-the inspection bay.
+This reuses the maintenance-guide reading pipeline almost as-is: `app/services/maintenance_guides/`
+(`pdf_text.rb`, `claude_extractor.rb`, `validator.rb`) turns the document into structured terms,
+`app/models/true_cost/coverage.rb` and `warranty_term` already model "cover left by time and miles," and
+MOT `inspection` records supply the mileage and service signal. Same trust rule as everywhere in curb:
+every claim is tied back to the exact line in the document, and nothing is asserted that the paper
+doesn't say. **One action:** snap the warranty. **One verdict:** a short covered / at-risk / lapsed list.
 
-### 9. Watchlist + recall / bulletin alerts
-Let a signed-in user follow a specific car (in their garage) or a model they're shopping, and get
-notified when a new recall or service bulletin lands, or when the weak-spot profile shifts. Turns a
-one-shot report into a reason to come back, and leans on data curb already imports.
+### 4. "Should I buy the warranty?" verdict
+When a dealer offers an extended plan at the desk, curb says whether it's worth it. It already knows this
+car's odds of each repair (`defect_odds.rb`) and what a plan would cover (`coverage.rb`); it weighs the
+plan's price against the repairs it would likely pay for over the time the buyer keeps the car. Paired
+with #3, it first **subtracts cover the car already has**, so the advice is about the real gap, not
+double-counting.
 
-### 10. Public shared reports + embeddable "true cost" badge
-Finish report sharing (`shared_reports_controller.rb`): stable links, an open-graph public view, and a
-clear boundary on what's exposed (no account data, demo-vs-real banner kept). Then offer an embeddable
-"true cost to own" badge that listing sites, forums and sellers can drop onto a listing — curb's main
-organic-growth and B2B wedge in one.
+> *"**Skip it.** You'd pay about **$1,200** for this plan and probably only use about **$400** of it."*
 
-### 11. New regions: Germany (TÜV), then France
-Curb's architecture already spans three countries' inspection regimes (UK MOT, Dutch APK/RDW, US). The
-data layer is the hard part and it's proven; adding Germany's TÜV data and then France extends the
-model to large markets without reinventing the engine.
+**One action:** type the plan's price (and months/miles). **One verdict:** Worth it / Skip it + the two
+numbers behind it, in dollars, no jargon.
 
-### 12. Real reference data
-The warranty terms, service schedule and labor/repair costs in `db/seeds/*.yml` are starter values (the
-README says so). Replace repair costs with CarMD or HaynesPro figures, verify each warranty term against
-the manufacturer, and check the service schedule, so reports can drop the "demo" caveat. Underpins #1,
-#3 and #5.
+### 5. Negotiation one-pager
+Turn everything curb found into things the buyer can actually *say* to pay less. A single printable,
+phone-friendly page: the weak spots for this model, open recalls, inspection history, and how far the
+true cost runs over a fair price — rewritten as plain talking points. Uses Claude (already wired in
+`app/services/claude.rb`) to phrase them; every point links back to the data behind it.
 
-### 13. Confidence calibration + accuracy back-test harness
-Every figure is labeled with a confidence level that isn't yet validated. Build a harness that
-back-tests `defect_odds.rb` and `calculator.rb` against held-out MOT years, then set the smoothing
-constant (k = 50 today) and the confidence bands from measured error instead of by hand.
+> *"Things you can say to pay less:"*
+> *"• This engine often needs a timing chain around 70,000 miles — that's about **$1,800**. Ask them to
+> take that off the price."*
 
-### 14. Turn on billing
-Plans, payments, check limits and Stripe webhooks are built behind a feature switch
-(`plans_controller.rb`, `subscriptions_controller.rb`, `stripe_webhooks_controller.rb`;
-[`docs/billing.md`](docs/billing.md)) and off for now. Finalize tiers and the free limit, move Stripe to
-live keys, exercise subscribe → webhook → entitlement end to end, add dunning/cancellation, then flip it
-on.
+**One action:** tap "Help me negotiate" on a report. **One verdict:** a short list of sentences to say.
+
+### 6. Fair-price check
+Curb says what a car costs to *own*, but not whether the *asking price* is fair. Pull comparable listings
+for the same car and mileage and show where this price sits — in one sentence, not a chart.
+
+> *"This price looks **a little high**. Cars like this usually sell for about **$1,500 less**."*
+
+Needs a source of listing prices (evaluating options is part of the work). Hooks into the existing
+lookup (`vehicle_lookup`) and `report`. **One action:** none extra — it runs from the car and price
+already entered. **One verdict:** Good price / Fair / High + the typical price.
+
+### 7. Pre-purchase inspection checklist
+A one-page list the buyer hands their mechanic, already filled in with *this* model's known weak spots
+(from `ModelProfile` — UK safety checks, US owner reports, maker bulletins) and open recalls, in words a
+non-mechanic understands. Cheap to build on data curb already has, and it carries curb's value past the
+lot into the inspection bay.
+
+**One action:** tap "Checklist for my mechanic." **One verdict:** a printable "please check these"
+list, each item with a one-line reason.
