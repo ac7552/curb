@@ -1,121 +1,151 @@
 # Curb Roadmap
 
-Curb already turns inspection data into a true cost of owning a used car. This next phase answers the
+Curb already turns inspection data into the true cost of owning a used car. The next phase answers the
 questions a buyer actually has on the lot: *What will it really cost me? Is this a good price? Is the
-warranty worth it — and does it even still cover this car?*
+warranty worth it, and does it even still cover this car?*
 
-**Design bar for every feature:** so simple a 4th–5th grader could use it. That means **one obvious
-action** (paste a link, snap a photo) and **one plain-English verdict** (a ✅ / ⚠️ / ❌ and a single
-sentence that says why) — never a table of numbers or a word like "depreciation" or "deductible" without
-plain words around it.
+## Design bar
 
-In recommended build order. Nothing below is built yet; a few items note existing code they build on.
+Every feature has to be simple enough for a 4th or 5th grader:
+
+- **One obvious action**: paste a link, snap a photo, or nothing at all.
+- **One plain verdict**: a ✅ / ⚠️ / ❌ and one sentence that says why. No tables to read, and no words
+  like "depreciation" or "deductible" without plain words around them.
+- **Honest about certainty**: every verdict keeps curb's confidence label, said plainly ("we're pretty
+  sure" / "rough guess").
+- **The buyer's money**: amounts in their own currency ($, £ or €) and distance unit.
+
+## The features
+
+In priority order. Nothing below is built yet; each item names the existing code it builds on.
 
 | # | Feature | Value | Effort | Builds on |
 |---|---------|-------|--------|-----------|
-| 1 | Depreciation & net cost | High | Medium–High | `true_cost/calculator.rb` |
-| 2 | Side-by-side comparison | High | Medium | `reports_controller`, `report` |
-| 3 | Warranty scan & live coverage check | High | Medium | `maintenance_guides/`, `coverage.rb` |
-| 4 | "Should I buy the warranty?" verdict | High | Medium | `coverage.rb`, `defect_odds.rb` |
-| 5 | Negotiation one-pager | High | Medium | `model_profile`, `recall`, `claude.rb` |
+| 1 | Resale value & net cost | High | Medium–High | `true_cost/calculator.rb` |
+| 2 | Side-by-side comparison | High | Medium | Reports page comparison bar |
+| 3 | Warranty scan & coverage check | High | Medium–High | `maintenance_guides/`, `coverage.rb` |
+| 4 | "Should I buy the warranty?" | High | Medium | `coverage.rb`, `calculator.rb` |
+| 5 | Negotiation one-pager | High | Medium | Report recall notes, `model_profile`, `claude.rb` |
 | 6 | Fair-price check | High | Medium–High | `vehicle_lookup`, `report` |
-| 7 | Pre-purchase inspection checklist | Medium–High | Low–Medium | `model_profile` |
-| 8 | "Where it breaks" picture of the car | High | Medium | `model_part_profile`, `defect_category` |
+| 7 | Checklist for your mechanic | Medium–High | Low–Medium | `model_profile` |
+| 8 | "Where it breaks" picture | High | Medium | `model_part_profile`, `defect_category` |
+
+### Shared groundwork
+
+Two pieces of new plumbing serve more than one feature, so each gets built once:
+
+- **Used-car price data** (#1 and #6). Resale value and fair price both need real asking and selling
+  prices by model, year and mileage in each market. Choosing and loading that source is the first job
+  for either feature.
+- **Document reading** (#3, reused by #4). Turning a warranty PDF or photo into structured terms. The
+  maintenance-guide pipeline already does this for owner's manuals.
+
+Features 5, 7 and 8 run entirely on data curb already has, so they can ship while the price source is
+being sorted out.
 
 ---
 
-### 1. Depreciation & net cost
-Right now true cost = price + repairs + maintenance (`app/models/true_cost/calculator.rb`). That leaves
-out the biggest number of all: what the car is worth when you sell it. Add a resale-value estimate for
-the end of the time the buyer plans to keep it, and show the real figure in plain words:
+### 1. Resale value & net cost
+Today true cost = price + repairs + maintenance (`app/models/true_cost/calculator.rb`). That leaves out
+the biggest number of all: what the car is worth when you sell it. Estimate resale value at the end of
+the time the buyer plans to keep it, and subtract it.
 
 > *"This car will be worth about **$14,000** when you sell it, so it really costs you about **$9,000** to
-> own — not the $23,000 on the windshield."*
+> own, not the $23,000 on the windshield."*
 
-**One action:** nothing new — it uses the price, mileage and years-to-keep the buyer already enters.
-**One verdict:** the net cost, big, with the sticker price crossed out next to it.
+**Action:** none. It uses the price, mileage and years-to-keep the buyer already enters.
+**Verdict:** the net cost, big, with the sticker price crossed out beside it.
 
 ### 2. Side-by-side comparison
-A buyer on a lot is choosing *between* cars, not grading one. Let them pin two (or three) cars and see
-them next to each other: net cost to own, chance of a big repair, known weak spots, and open recalls —
-each row a plain ✅ / ⚠️ / ❌, with a thumbs-up on the one that's cheaper to own overall.
+A buyer on a lot is choosing *between* cars. The reports page already has a "Compared with your other
+cars" bar; grow that into a real side-by-side of two or three cars: net cost to own, chance of a big
+repair bill, known weak spots and open recalls. Each row is a ✅ / ⚠️ / ❌, with a thumbs-up on the car
+that's cheaper to own.
 
-**One action:** tap "Compare" on a second report.
-**One verdict:** "Car A is the cheaper one to own" + the few reasons why.
+**Action:** tap "Compare" on a second report.
+**Verdict:** "Car A is cheaper to own," plus the two or three reasons why.
 
-### 3. Warranty scan & live coverage check
-Dealers wave a warranty as a selling point. Curb should read the actual paper and say what it really
-covers *for this car, today*. The buyer photographs or uploads the warranty (factory booklet, CPO
-certificate, or an extended-plan contract) and curb pulls out the terms, then checks them against the
-car's age and mileage — and against its service history, because many plans are void if scheduled
-maintenance was skipped.
+### 3. Warranty scan & coverage check
+Dealers sell a warranty as a reason to buy. Curb reads the actual paper and says what it covers *for this
+car, today*. The buyer uploads or photographs the warranty (factory booklet, CPO certificate or
+extended-plan contract). Curb pulls out the terms and checks them against the car's age, its mileage, and
+its service history, because many plans are void if scheduled service was skipped.
 
-> *"✅ Your engine and gearbox are covered until about **March 2027** or **60,000 miles**, whichever
-> comes first."*
-> *"⚠️ Careful — this plan needs a service every year, and we don't see one for 2024. That could cancel
-> the engine cover."*
+> *"✅ Your engine and transmission are covered until about **March 2027** or **60,000 miles**,
+> whichever comes first."*
+> *"⚠️ Careful: this plan needs a service every year, and there's no record of one for 2024. That could
+> cancel the engine cover."*
 
-This reuses the maintenance-guide reading pipeline almost as-is: `app/services/maintenance_guides/`
-(`pdf_text.rb`, `claude_extractor.rb`, `validator.rb`) turns the document into structured terms,
-`app/models/true_cost/coverage.rb` and `warranty_term` already model "cover left by time and miles," and
-MOT `inspection` records supply the mileage and service signal. Same trust rule as everywhere in curb:
-every claim is tied back to the exact line in the document, and nothing is asserted that the paper
-doesn't say. **One action:** snap the warranty. **One verdict:** a short covered / at-risk / lapsed list.
+How it's built:
+- **Reading the paper:** the maintenance-guide pipeline in `app/services/maintenance_guides/`
+  (`pdf_text.rb`, `claude_extractor.rb`, `validator.rb`) handles PDFs; photos are read with Claude vision.
+- **Time and miles left:** `app/models/true_cost/coverage.rb` and `warranty_term` already work this out.
+- **Mileage history:** UK MOT and Dutch APK records give past odometer readings.
+- **Service history (new):** curb has no service records yet. The buyer adds them the easy way: snap the
+  service book or receipts. Without them, the verdict says "we can't tell" instead of guessing.
 
-### 4. "Should I buy the warranty?" verdict
-When a dealer offers an extended plan at the desk, curb says whether it's worth it. It already knows this
-car's odds of each repair (`defect_odds.rb`) and what a plan would cover (`coverage.rb`); it weighs the
-plan's price against the repairs it would likely pay for over the time the buyer keeps the car. Paired
-with #3, it first **subtracts cover the car already has**, so the advice is about the real gap, not
-double-counting.
+Same trust rule as the rest of curb: every claim points to the line in the document it came from, and
+nothing is said that the paper doesn't say.
+
+**Action:** snap the warranty.
+**Verdict:** a short list of what's covered, at risk, or run out.
+
+### 4. "Should I buy the warranty?"
+When a dealer offers an extended plan at the desk, curb says whether it's worth the money. The report
+already works out what the buyer would pay out of pocket for each likely repair, and `coverage.rb`
+already handles CPO and extended plans. This compares the plan's price with the repair bills it would
+actually pay over the time the buyer keeps the car. With #3, it first takes off what the car's existing
+cover already pays for, so nothing is counted twice.
 
 > *"**Skip it.** You'd pay about **$1,200** for this plan and probably only use about **$400** of it."*
 
-**One action:** type the plan's price (and months/miles). **One verdict:** Worth it / Skip it + the two
-numbers behind it, in dollars, no jargon.
+**Action:** type the plan's price and how long it lasts.
+**Verdict:** Worth it / Skip it, plus the two amounts behind it.
 
 ### 5. Negotiation one-pager
-Turn everything curb found into things the buyer can actually *say* to pay less. A single printable,
-phone-friendly page: the weak spots for this model, open recalls, inspection history, and how far the
-true cost runs over a fair price — rewritten as plain talking points. Uses Claude (already wired in
-`app/services/claude.rb`) to phrase them; every point links back to the data behind it.
+Turn what curb found into things the buyer can *say* to pay less. The report already prompts "ask if the
+recall was fixed"; this gathers every point into one printable, phone-friendly page: the model's weak
+spots, open recalls, inspection history, and how far the price sits above fair. Claude
+(`app/services/claude.rb`) writes the sentences; each one links to the data behind it.
 
-> *"Things you can say to pay less:"*
-> *"• This engine often needs a timing chain around 70,000 miles — that's about **$1,800**. Ask them to
-> take that off the price."*
+> *"Things you can say to pay less:*
+> *• This engine often needs a timing chain around 70,000 miles. That's about **$1,800**. Ask them to
+> take it off the price."*
 
-**One action:** tap "Help me negotiate" on a report. **One verdict:** a short list of sentences to say.
+**Action:** tap "Help me negotiate" on a report.
+**Verdict:** a short list of sentences to say.
 
 ### 6. Fair-price check
-Curb says what a car costs to *own*, but not whether the *asking price* is fair. Pull comparable listings
-for the same car and mileage and show where this price sits — in one sentence, not a chart.
+Curb says what a car costs to *own*, but not whether the *asking price* is fair. Using the price data
+from the shared groundwork, find cars like this one at similar mileage and say where this price sits,
+in one sentence rather than a chart.
 
 > *"This price looks **a little high**. Cars like this usually sell for about **$1,500 less**."*
 
-Needs a source of listing prices (evaluating options is part of the work). Hooks into the existing
-lookup (`vehicle_lookup`) and `report`. **One action:** none extra — it runs from the car and price
-already entered. **One verdict:** Good price / Fair / High + the typical price.
+**Action:** none. It runs from the car and price already entered.
+**Verdict:** Good price / Fair / High, plus the usual price.
 
-### 7. Pre-purchase inspection checklist
-A one-page list the buyer hands their mechanic, already filled in with *this* model's known weak spots
-(from `ModelProfile` — UK safety checks, US owner reports, maker bulletins) and open recalls, in words a
-non-mechanic understands. Cheap to build on data curb already has, and it carries curb's value past the
-lot into the inspection bay.
+### 7. Checklist for your mechanic
+A one-page list the buyer hands their mechanic before buying, already filled in with *this* model's known
+weak spots (from `ModelProfile`: UK safety checks, US owner reports and maker bulletins) and any open
+recalls, in words a non-mechanic understands. Cheap to build on data curb already has, and it carries
+curb's help past the lot into the repair shop.
 
-**One action:** tap "Checklist for my mechanic." **One verdict:** a printable "please check these"
-list, each item with a one-line reason.
+**Action:** tap "Checklist for my mechanic."
+**Verdict:** a printable "please check these" list, each item with a one-line reason.
 
-### 8. "Where it breaks" picture of the car
-A simple drawing of the car — side and top view — with its trouble spots lit up for that exact model.
-No photo needed: it's built straight from the data curb already has (`model_part_profile`,
-`owner_reports`, `bulletin_theme`), mapped onto body zones (engine, gearbox, suspension, brakes,
-electrics, body) through the `defect_category` curb already sorts every fault into. Tap a glowing spot
-and it says, in plain words, what tends to go wrong, when, and what it costs:
+### 8. "Where it breaks" picture
+A simple drawing of the car, side and top view, with its trouble spots lit up for that exact model. No
+photo needed: it's drawn from data curb already has (`model_part_profile`, `owner_reports`,
+`bulletin_theme`), placed on body zones (engine, transmission, suspension, brakes, electrics, body)
+through the `defect_category` every fault is already sorted into. Tap a glowing spot to see what goes
+wrong, when, and what it costs:
 
-> *"Timing chain — tends to go around **70,000 miles**. Costs about **$1,800**. Ask your mechanic to
+> *"Timing chain: tends to go around **70,000 miles**. Costs about **$1,800**. Ask your mechanic to
 > check it."*
 
-Because it's drawn from data, not photos, it works the instant you look up a car — on the lot or at
-home — and looks the same for every model. It turns curb's "known weak spots" from a list into something
-a kid could read at a glance. **One action:** look up a car. **One verdict:** a picture of the car with
-the weak spots glowing, a plain sentence on each.
+Because it's drawn from data, it works the moment a car is looked up and looks the same for every model.
+It turns "known weak spots" from a list into something a kid can read at a glance.
+
+**Action:** look up a car.
+**Verdict:** a picture of the car with its weak spots glowing, and one plain sentence on each.
